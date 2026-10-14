@@ -1,0 +1,2005 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مغامرة سمسم في بايثون</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
+<style>
+/* Layout: a pastel candy-island sticker book organised as 12 class sessions in 3 phases. Soft jelly buttons, scalloped world cards, a chubby mascot everywhere. One committed light world. */
+:root{
+  color-scheme: light;
+  --bg:#FFF3F7;
+  --ink:#5A3E4B; --muted:#94737F; --card:#FFFFFF; --soft:#FFF8FA; --line:#F6D3DF;
+  --pink:#FF8FB1; --pink-d:#E0608A; --sky:#6EC1FF; --sky-d:#3A95DD; --mint:#4FD69C; --mint-d:#26A872;
+  --sun:#FFD95E; --sun-d:#E0AE22; --lav:#C9B6FF; --lav-d:#9C85E6;
+  --good-bg:#E4FAEF; --bad-bg:#FFE8EE; --warn-bg:#FFF6D8;
+  --ed-bg:#2F2D45; --ed-bar:#3B3956; --ed-gutter:#29273D; --ed-fg:#F3F0FF; --ed-kw:#FF9EC4; --ed-str:#FFE08A; --ed-num:#9BF0C9; --ed-bi:#8FD3FF; --ed-com:#9C99BC; --ed-fn:#C9F59B;
+  --display:"Baloo Bhaijaan 2", "Tahoma", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", "Baloo Bhaijaan 2", ui-monospace, "Courier New", monospace;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg)}
+body{font-family:var(--display); color:var(--ink); font-size:18px; line-height:1.7;
+  background:radial-gradient(1200px 600px at 100% -10%, #FFE3EC 0, transparent 60%), radial-gradient(900px 600px at -10% 30%, #E3F0FF 0, transparent 60%), radial-gradient(900px 700px at 110% 90%, #E2FAEE 0, transparent 60%), var(--bg);
+  background-attachment:fixed; min-height:100%}
+button{font-family:inherit; color:inherit}
+:focus-visible{outline:4px solid var(--sky-d); outline-offset:3px}
+
+.deco{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden}
+.cloud{position:absolute; width:120px; height:40px; background:#fff; border-radius:40px; opacity:.85}
+.cloud::before,.cloud::after{content:""; position:absolute; background:#fff; border-radius:50%}
+.cloud::before{width:56px; height:56px; top:-28px; left:18px}
+.cloud::after{width:40px; height:40px; top:-18px; left:62px}
+.c1{top:14%; left:4%} .c2{top:62%; right:3%; transform:scale(1.3)} .c3{top:88%; left:30%; transform:scale(.8)}
+.spark{position:absolute; color:#FFC2D6; font-size:22px}
+@media (prefers-reduced-motion:no-preference){
+  .cloud{animation:drift 22s ease-in-out infinite alternate} .c2{animation-duration:30s}
+  .spark{animation:twinkle 3s ease-in-out infinite}
+}
+@keyframes drift{to{translate:60px 0}}
+@keyframes twinkle{50%{opacity:.25; scale:.7}}
+
+.wrap{position:relative; z-index:1; max-width:1320px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:0 56px}
+
+.top{position:sticky; top:env(safe-area-inset-top, 0px); z-index:30; background:rgba(255,255,255,.9); backdrop-filter:blur(10px); border-bottom:3px solid var(--line)}
+.top-in{max-width:1320px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:8px; display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+.brand{display:flex; align-items:center; gap:8px; font-weight:800; font-size:1.35rem; cursor:pointer; background:none; border:0; padding:0; color:var(--pink-d)}
+.brand .m{width:52px; height:52px}
+.stats{display:flex; gap:8px; margin-inline-start:auto; flex-wrap:wrap; align-items:center}
+.pill{display:inline-flex; align-items:center; gap:6px; background:var(--soft); border:2.5px solid var(--line); border-radius:999px; padding:1px 14px; font-weight:800; font-size:1rem; white-space:nowrap}
+.pill b{color:var(--pink-d); font-variant-numeric:tabular-nums}
+.pill.xp{background:#FFF6D8; border-color:#F8DE87} .pill.xp b{color:#C8901A}
+.pill.rank{background:#EFE9FF; border-color:#D8CCFF; color:#7A60D6}
+.iconbtn{background:var(--soft); border:2.5px solid var(--line); border-radius:50%; width:42px; height:42px; display:grid; place-items:center; cursor:pointer; color:var(--pink-d)}
+.iconbtn svg{width:22px; height:22px}
+
+.btn{--bc:#fff; --bd:var(--line); --bt:var(--ink);
+  display:inline-flex; align-items:center; justify-content:center; gap:8px; background:var(--bc); color:var(--bt); border:3px solid var(--bd); border-radius:999px; padding:7px 20px; font-size:1.08rem; font-weight:800; cursor:pointer; line-height:1.5;
+  box-shadow:0 5px 0 var(--bd), inset 0 3px 0 rgba(255,255,255,.55), inset 0 -4px 0 rgba(0,0,0,.05); transition:transform .1s, box-shadow .1s}
+.btn:hover{transform:translateY(-2px); box-shadow:0 7px 0 var(--bd), inset 0 3px 0 rgba(255,255,255,.55), inset 0 -4px 0 rgba(0,0,0,.05)}
+.btn:active{transform:translateY(4px); box-shadow:0 1px 0 var(--bd)}
+.btn[disabled]{opacity:.5; cursor:not-allowed; transform:none}
+.btn svg{width:22px; height:22px; flex:none}
+.btn.pink{--bc:var(--pink); --bd:var(--pink-d); --bt:#fff}
+.btn.sky{--bc:var(--sky); --bd:var(--sky-d); --bt:#fff}
+.btn.mint{--bc:var(--mint); --bd:var(--mint-d); --bt:#fff}
+.btn.sun{--bc:var(--sun); --bd:var(--sun-d)}
+.btn.lav{--bc:var(--lav); --bd:var(--lav-d); --bt:#fff}
+.btn.big{font-size:1.3rem; padding:11px 30px}
+.btn.small{font-size:.95rem; padding:3px 14px; box-shadow:0 3px 0 var(--bd)}
+
+.hero{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:20px; align-items:center; padding-block:30px 10px}
+.hero h1{font-size:clamp(2.2rem, 6vw, 3.9rem); line-height:1.15; margin:0 0 6px; font-weight:800; text-wrap:balance}
+.hero h1 .py{font-family:var(--mono); color:#fff; background:var(--pink); border:3px solid var(--pink-d); border-radius:22px; padding:0 16px; display:inline-block; transform:rotate(-4deg); box-shadow:0 6px 0 var(--pink-d); font-size:.78em}
+.hero .lead{font-size:1.25rem; margin:0 0 14px; color:var(--muted); max-width:44ch; font-weight:600}
+.flow{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:0 0 18px; font-weight:800}
+.flow span.st{background:#fff; border:2.5px solid var(--line); border-radius:999px; padding:2px 14px}
+.flow span.ar{color:var(--pink)}
+.hero-actions{display:flex; gap:14px; flex-wrap:wrap}
+.hero-m{position:relative; width:min(250px, 32vw)}
+.hero-m .m{width:100%; height:auto}
+.bubble{position:absolute; top:-6px; inset-inline-end:76%; background:#fff; border:3px solid var(--line); border-radius:22px; padding:6px 14px; font-weight:800; white-space:nowrap; box-shadow:0 5px 0 var(--line)}
+@media (prefers-reduced-motion:no-preference){ .hero-m .m{animation:bob 3s ease-in-out infinite} }
+@keyframes bob{50%{transform:translateY(-10px) rotate(-3deg)}}
+
+.progress-row{display:flex; align-items:center; gap:14px; margin:10px 0 22px; flex-wrap:wrap; font-weight:800}
+.bar{flex:1; min-width:180px; height:24px; background:#fff; border:3px solid var(--line); border-radius:999px; overflow:hidden}
+.bar > i{display:block; height:100%; border-radius:999px; background:repeating-linear-gradient(-45deg, #FF9EBE 0 12px, #FFB8CF 12px 24px); transition:width .6s}
+.progress-row strong{font-variant-numeric:tabular-nums}
+
+.fun{display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap:16px; margin-bottom:30px}
+.tile{--tc:#fff; --tb:var(--line); background:var(--tc); border:3px solid var(--tb); border-radius:26px; box-shadow:0 6px 0 var(--tb); padding:12px 16px; display:flex; gap:12px; align-items:center; cursor:pointer; text-align:start; transition:transform .12s}
+.tile:hover{transform:translateY(-3px) rotate(-.6deg)}
+.tile .ico{font-size:2.2rem; line-height:1; flex:none; width:56px; height:56px; display:grid; place-items:center; background:#fff; border-radius:50%; border:3px solid var(--tb)}
+.tile h3{margin:0; font-size:1.15rem; line-height:1.3}
+.tile p{margin:0; font-size:.92rem; color:var(--muted); font-weight:600; line-height:1.4}
+.tile.ready .ico{background:#FFF6D8}
+@media (prefers-reduced-motion:no-preference){ .tile.ready .ico{animation:wiggle 1.2s ease-in-out infinite} }
+@keyframes wiggle{0%,60%,100%{rotate:0} 70%{rotate:-12deg} 80%{rotate:10deg} 90%{rotate:-6deg}}
+
+.phase{margin:34px 0 18px; display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+.phase h2{margin:0; font-size:clamp(1.4rem, 3.4vw, 1.9rem); line-height:1.25}
+.phase .pp{background:#fff; border:2.5px solid var(--line); border-radius:999px; padding:0 12px; font-weight:800; color:var(--muted); font-size:.95rem; font-variant-numeric:tabular-nums}
+.legend{display:flex; gap:8px 16px; flex-wrap:wrap; font-weight:700; color:var(--muted); font-size:.95rem}
+.legend span{display:inline-flex; gap:6px; align-items:center}
+.worlds{display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 390px), 1fr)); gap:30px 26px}
+.world{background:var(--card); border:3px solid var(--wb); border-radius:34px; box-shadow:0 8px 0 var(--wb); overflow:hidden; display:flex; flex-direction:column}
+.world-head{position:relative; background:var(--wc); padding:16px 20px 22px; display:flex; gap:14px; align-items:center}
+.world-head::after{content:""; position:absolute; left:0; right:0; bottom:-13px; height:14px; background:radial-gradient(circle at 13px 0, var(--wc) 12px, transparent 12.5px) repeat-x; background-size:26px 14px}
+.sticker{flex:none; width:64px; height:64px; display:grid; place-items:center; font-size:2.2rem; background:#fff; border-radius:50%; border:3px solid var(--wb); transform:rotate(-8deg); box-shadow:0 4px 0 var(--wb)}
+.world-head h3{margin:0; font-size:1.5rem; line-height:1.2}
+.wn{font-size:.95rem; font-weight:700; color:var(--muted)}
+.ses{display:inline-block; background:#fff; border:2px solid var(--wb); border-radius:999px; padding:0 10px; font-weight:800; font-size:.85rem; color:var(--ink); margin-inline-end:6px}
+.token{font-family:var(--mono); font-weight:700; font-size:.88rem; background:#fff; border:2px dashed var(--wb); border-radius:10px; padding:0 8px; direction:ltr; display:inline-block; margin-top:2px}
+.badge-done{margin-inline-start:auto; background:#fff; border:3px solid var(--wb); border-radius:999px; padding:0 12px; font-weight:800; font-size:.9rem; white-space:nowrap}
+.world-body{padding:22px 20px 26px; display:flex; flex-direction:column; gap:12px; flex:1}
+.world-body > p{margin:0; color:var(--muted); font-weight:600}
+.coins{display:flex; flex-wrap:wrap; gap:22px 12px; padding-top:4px}
+.coin{position:relative; width:76px; display:flex; flex-direction:column; align-items:center; gap:1px; background:none; border:0; cursor:pointer; padding:0}
+.coins .coin:nth-child(even){transform:translateY(14px)}
+.coin .disc{position:relative; width:62px; height:62px; border-radius:50%; border:3px solid var(--wb); background:#fff; display:grid; place-items:center; font-weight:800; font-size:1.4rem; box-shadow:0 5px 0 var(--wb), inset 0 -5px 0 rgba(0,0,0,.04); transition:transform .12s}
+.coin .kind{position:absolute; top:-8px; inset-inline-end:-10px; font-size:1rem; width:28px; height:28px; display:grid; place-items:center; background:#fff; border:2px solid var(--wb); border-radius:50%}
+.coin:hover .disc{transform:translateY(-3px) scale(1.06)}
+.coin.done .disc{background:var(--wc)}
+.coin.current .disc{background:var(--sun); border-color:var(--sun-d); box-shadow:0 5px 0 var(--sun-d)}
+@media (prefers-reduced-motion:no-preference){ .coin.current .disc{animation:pulse 1.4s ease-in-out infinite} }
+@keyframes pulse{50%{box-shadow:0 5px 0 var(--sun-d), 0 0 0 10px rgba(255,217,94,.4)}}
+.coin.locked{cursor:not-allowed}
+.coin.locked .disc{background:#F4EEF1; color:#C9B5BE; border-color:#E5D7DE; box-shadow:0 5px 0 #E5D7DE}
+.coin.locked .disc svg{width:24px; height:24px}
+.coin .mini{font-size:.8rem; font-weight:700; line-height:1.3; text-align:center; color:var(--muted); max-width:82px}
+.stars{display:flex; gap:1px; direction:ltr}
+.stars svg{width:16px; height:16px}
+.grad{margin-top:30px; background:linear-gradient(135deg, #FFF6D8, #FFEFF5); border:3px solid #F0B429; border-radius:34px; box-shadow:0 8px 0 #F0B429; padding:20px 24px; display:flex; gap:18px; align-items:center; flex-wrap:wrap}
+.grad .m{width:96px; height:96px; flex:none}
+.grad h3{margin:0; font-size:1.6rem}
+.grad p{margin:0; color:var(--muted); font-weight:600}
+.grad > div{flex:1; min-width:220px}
+.foot{margin-top:36px; display:flex; gap:12px; flex-wrap:wrap; align-items:center; color:var(--muted); font-weight:600; font-size:.95rem}
+
+.lvl-top{display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding-block:18px 16px}
+.crumb{display:flex; flex-direction:column; min-width:0}
+.crumb small{font-weight:700; color:var(--muted); font-size:1rem}
+.crumb h1{margin:0; font-size:clamp(1.6rem, 4vw, 2.4rem); line-height:1.2; text-wrap:balance}
+.kindtag{display:inline-flex; align-items:center; gap:4px; background:var(--wc); border:2.5px solid var(--wb); border-radius:999px; padding:0 12px; font-weight:800; font-size:.95rem; margin-inline-start:6px; vertical-align:middle}
+.lvl-nav{margin-inline-start:auto; display:flex; gap:10px}
+.bench{display:grid; grid-template-columns:minmax(0, 5fr) minmax(0, 7fr); gap:24px; align-items:start}
+.bench.solo{grid-template-columns:minmax(0, 1fr); max-width:820px; margin:0 auto}
+@media (max-width:980px){ .bench{grid-template-columns:minmax(0,1fr)} }
+.col{display:flex; flex-direction:column; gap:24px; min-width:0}
+.panel{background:var(--card); border:3px solid var(--pb, var(--line)); border-radius:30px; box-shadow:0 7px 0 var(--pb, var(--line)); overflow:hidden; min-width:0}
+.panel-h{display:flex; align-items:center; gap:10px; padding:10px 20px; background:var(--ph, var(--wc)); font-weight:800; font-size:1.2rem; flex-wrap:wrap}
+.panel-h .tag{background:#fff; border:2.5px solid var(--pb, var(--wb)); border-radius:999px; padding:0 12px; font-size:.95rem}
+.panel.quiz{--pb:#F2C94C; --ph:#FFF0B3}
+.panel.task{--pb:#F49AB8; --ph:#FFD1DF}
+.panel.playp{--pb:#7DB8F2; --ph:#CFE8FF}
+.panel.lessonp{--pb:var(--wb); --ph:var(--wc)}
+.panel-b{padding:18px 20px 22px; display:flex; flex-direction:column; gap:14px; min-width:0}
+.panel-b p{margin:0}
+.lesson p{font-size:1.15rem}
+.ideas{margin:0; padding-inline-start:22px; display:flex; flex-direction:column; gap:6px; font-weight:700}
+code.ic{font-family:var(--mono); background:#FFEFF5; border:2px solid #FFD0E0; border-radius:8px; padding:0 6px; font-size:.88em; direction:ltr; unicode-bidi:isolate; white-space:nowrap; color:#B4436E}
+.snip{border-radius:20px; overflow:hidden; border:3px solid #E3DDF5}
+.snip pre{margin:0; background:var(--ed-bg); color:var(--ed-fg); padding:12px 16px; font-family:var(--mono); font-size:16px; line-height:1.65; overflow-x:auto; direction:ltr; text-align:left}
+.snip .out{background:#26243A; color:#C9F7DE; font-family:var(--mono); font-size:15px; padding:8px 16px; border-top:2px dashed #4a4766; white-space:pre-wrap; unicode-bidi:plaintext; text-align:right}
+.snip .out::before{content:"الناتج ◂ "; color:var(--ed-com); font-family:var(--display)}
+.say{display:flex; gap:12px; align-items:flex-start}
+.say .m{flex:none; width:58px; height:58px}
+.say .txt{background:#FFF6D8; border:3px solid #F8DE87; border-radius:20px; padding:8px 14px; font-weight:600; min-width:0}
+.say.pinkish .txt{background:#FFEFF5; border-color:#FFD0E0}
+.say.blueish .txt{background:#EAF5FF; border-color:#C4E1FB}
+
+.quiz-q{font-size:1.2rem; font-weight:800}
+.opts{display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap:12px}
+.opt{border:3px solid #F1E1E8; background:#fff; border-radius:20px; padding:10px 14px; font-size:1.1rem; font-weight:700; cursor:pointer; box-shadow:0 4px 0 #F1E1E8; white-space:pre-wrap; unicode-bidi:plaintext; text-align:center; transition:transform .1s}
+.opt:hover{transform:translateY(-2px); border-color:var(--pink)}
+.opt.mono{font-family:var(--mono); font-size:1rem}
+.opt.right{background:var(--good-bg); border-color:var(--mint-d); box-shadow:0 4px 0 var(--mint-d)}
+.opt.wrong{background:var(--bad-bg); border-color:var(--pink-d); box-shadow:0 4px 0 var(--pink-d)}
+@media (prefers-reduced-motion:no-preference){ .opt.wrong{animation:shake .35s} .opt.right{animation:boing .4s} }
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes boing{40%{transform:scale(1.07)}}
+.quiz-why{border-radius:18px; padding:10px 14px; font-weight:600; border:3px solid}
+.quiz-why.ok{background:var(--good-bg); border-color:#A9EBCB}
+.quiz-why.no{background:var(--bad-bg); border-color:#FFC4D5}
+
+.task-text{font-size:1.25rem; font-weight:700; line-height:1.7}
+.expect{display:flex; flex-direction:column; gap:4px}
+.expect span{font-weight:700; color:var(--muted); font-size:1rem}
+.expect pre{margin:0; background:var(--soft); border:3px dashed #F6C4D5; border-radius:16px; padding:8px 14px; font-family:var(--mono); font-size:16px; white-space:pre-wrap; unicode-bidi:plaintext; text-align:right}
+
+.keys{display:flex; flex-wrap:wrap; gap:6px; direction:ltr}
+.key{font-family:var(--mono); font-weight:700; font-size:1.05rem; min-width:42px; height:40px; padding:0 10px; border:2.5px solid #E3DDF5; border-radius:14px; background:#F7F4FF; cursor:pointer; box-shadow:0 3px 0 #E3DDF5; color:#6D55C8}
+.key:active{transform:translateY(3px); box-shadow:none}
+.keys-note{font-size:.95rem; color:var(--muted); font-weight:600; margin:0}
+
+.editor-wrap{border-radius:24px; overflow:hidden; border:3px solid #DCD4F3; box-shadow:0 6px 0 #DCD4F3}
+.ed-bar{background:var(--ed-bar); display:flex; align-items:center; gap:7px; padding:8px 14px; direction:ltr}
+.ed-bar i{width:13px; height:13px; border-radius:50%; display:block}
+.ed-bar span{color:#B9B5D9; font-family:var(--mono); font-size:.85rem; margin-left:8px}
+.editor{display:flex; direction:ltr; background:var(--ed-bg); height:300px; resize:vertical; overflow:hidden; min-height:180px}
+.gutter{flex:none; width:46px; background:var(--ed-gutter); color:#6B6890; font-family:var(--mono); font-size:17px; line-height:28px; padding:14px 0; text-align:center; overflow:hidden; user-select:none}
+.gutter div.err{background:var(--pink-d); color:#fff}
+.code-area{position:relative; flex:1; min-width:0}
+.code-area pre, .code-area textarea{position:absolute; inset:0; margin:0; border:0; padding:14px 16px; font-family:var(--mono); font-size:17px; line-height:28px; letter-spacing:0; tab-size:4; white-space:pre; word-wrap:normal; overflow-wrap:normal; text-align:left; direction:ltr}
+.code-area pre{overflow:hidden; color:var(--ed-fg); pointer-events:none}
+.code-area textarea{background:transparent; color:transparent; caret-color:#FFE08A; resize:none; outline:none; overflow:auto}
+.code-area textarea::selection{background:rgba(143,211,255,.35); color:transparent}
+.tk-k{color:var(--ed-kw); font-weight:700} .tk-s{color:var(--ed-str)} .tk-n{color:var(--ed-num)} .tk-b{color:var(--ed-bi)} .tk-c{color:var(--ed-com); font-style:italic} .tk-f{color:var(--ed-fn)}
+
+.stdin{display:flex; flex-direction:column; gap:4px}
+.stdin label{font-weight:800}
+.stdin small{color:var(--muted); font-weight:600}
+.stdin textarea{font-family:var(--mono); font-size:16px; border:3px solid var(--line); border-radius:16px; padding:8px 12px; min-height:68px; resize:vertical; unicode-bidi:plaintext; text-align:right; background:var(--soft); color:var(--ink)}
+.actions{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+.actions .spacer{flex:1}
+.console{background:#26243A; border-radius:22px; border:3px solid #DCD4F3; min-height:100px; max-height:340px; overflow:auto; padding:10px 16px; font-family:var(--mono); font-size:16px; line-height:1.7; color:#F3F0FF}
+.console .title{font-family:var(--display); color:#B9B5D9; font-size:.95rem; font-weight:700}
+.console .ln{white-space:pre-wrap; unicode-bidi:plaintext; text-align:right; min-height:1.7em}
+.console .in{color:var(--ed-str)}
+.console .muted{color:var(--ed-com); font-family:var(--display)}
+.live-in{font-family:var(--mono); font-size:16px; background:#3B3956; color:var(--ed-str); border:2px solid var(--ed-str); border-radius:10px; padding:2px 10px; min-width:140px; width:50%; margin-inline-start:6px; outline:none}
+
+.fb{border:3px solid; border-radius:24px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start}
+.fb.bad{background:var(--bad-bg); border-color:#FFC4D5}
+.fb.warn{background:var(--warn-bg); border-color:#F8DE87}
+.fb.good{background:var(--good-bg); border-color:#A9EBCB}
+.fb .m{flex:none; width:60px; height:60px}
+.fb-body{min-width:0; flex:1; display:flex; flex-direction:column; gap:8px}
+.fb-body h4{margin:0; font-size:1.25rem}
+.fb-body p{margin:0; font-weight:600}
+.fb-body .tech{font-family:var(--mono); font-size:.85rem; color:var(--muted); direction:ltr; text-align:left; overflow-x:auto; white-space:pre}
+.cmp{display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap:10px}
+.cmp div{min-width:0}
+.cmp b{display:block; font-size:.95rem}
+.cmp pre{margin:0; background:#fff; border:3px solid var(--line); border-radius:14px; padding:6px 12px; font-family:var(--mono); font-size:15px; white-space:pre-wrap; unicode-bidi:plaintext; text-align:right; min-height:2.2em}
+.hintbox{background:#FFFBEA; border:3px dashed #F2C94C; border-radius:22px; padding:12px 16px; font-weight:600; display:flex; flex-direction:column; gap:8px}
+
+.zone{border:3px dashed var(--line); border-radius:24px; padding:12px; display:flex; flex-direction:column; gap:8px; min-height:80px; background:var(--soft)}
+.zone.answer{background:#F7F4FF; border-color:#D8CCFF}
+.zone h4{margin:0; font-size:1rem; color:var(--muted)}
+.zone .empty{color:var(--muted); font-weight:600; text-align:center; padding:8px}
+.chip{display:flex; align-items:center; gap:10px; direction:ltr; text-align:left; width:100%; font-family:var(--mono); font-size:16px; background:var(--ed-bg); color:var(--ed-fg); border:3px solid #DCD4F3; border-radius:16px; padding:8px 14px; cursor:pointer; box-shadow:0 4px 0 #CFC6EC; white-space:pre; overflow-x:auto; transition:transform .1s}
+.chip:hover{transform:translateY(-2px)}
+.chip .no{flex:none; font-family:var(--display); font-weight:800; width:26px; height:26px; border-radius:50%; background:var(--lav); color:#fff; display:grid; place-items:center; font-size:.9rem}
+.chip .lead{background-image:radial-gradient(#8C88B5 1.3px, transparent 1.6px); background-size:10px 10px; background-position:center}
+
+.modal{position:fixed; inset:0; z-index:60; background:rgba(90,62,75,.38); backdrop-filter:blur(3px); display:grid; place-items:center; padding:20px max(16px, env(safe-area-inset-right, 0px)) 20px max(16px, env(safe-area-inset-left, 0px)); overflow:auto}
+.modal-card{background:#fff; border:4px solid var(--line); border-radius:36px; box-shadow:0 10px 0 var(--line); max-width:560px; width:100%; padding:24px 24px 28px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:10px}
+.modal-card.wide{max-width:860px}
+@media (prefers-reduced-motion:no-preference){ .modal-card{animation:pop .45s cubic-bezier(.2,1.6,.4,1)} }
+@keyframes pop{from{transform:scale(.6); opacity:0}}
+.modal-card h2{margin:0; font-size:2.1rem; line-height:1.2; color:var(--pink-d)}
+.modal-card h3{margin:8px 0 0; font-size:1.4rem}
+.modal-card p{margin:0; font-size:1.15rem; font-weight:600; color:var(--muted)}
+.modal-card > .m{width:130px; height:130px}
+.bigstars{display:flex; gap:8px; direction:ltr}
+.bigstars svg{width:62px; height:62px}
+@media (prefers-reduced-motion:no-preference){ .bigstars svg.on{animation:starin .5s backwards} .bigstars svg:nth-child(2){animation-delay:.15s} .bigstars svg:nth-child(3){animation-delay:.3s} }
+@keyframes starin{from{transform:scale(0) rotate(-90deg)}}
+.xpgain{font-size:1.4rem; font-weight:800; background:#FFF6D8; border:3px solid #F8DE87; border-radius:999px; padding:0 18px; color:#C8901A}
+.newbadge{background:#F3EEFF; border:3px solid #D8CCFF; border-radius:20px; padding:6px 16px; font-weight:800; color:#7A60D6}
+.modal-actions{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:8px}
+.grid-items{display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:14px; width:100%}
+.item{border:3px solid var(--line); border-radius:24px; padding:10px; background:var(--soft); display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; font-weight:800; line-height:1.35}
+.item .m{width:90px; height:90px}
+.item.sel{border-color:var(--pink-d); background:#FFEFF5; box-shadow:0 5px 0 var(--pink-d)}
+.item.locked{filter:grayscale(1); opacity:.55; cursor:not-allowed}
+.item small{color:var(--muted); font-weight:700}
+.stk{font-size:3rem; line-height:1.2}
+
+.board{width:100%; display:flex; flex-direction:column; gap:10px; text-align:start}
+.addrow{display:flex; gap:10px; flex-wrap:wrap}
+.addrow input{flex:1; min-width:160px; font-family:var(--display); font-size:1.1rem; border:3px solid var(--line); border-radius:999px; padding:6px 18px; background:var(--soft); color:var(--ink)}
+.brow{display:flex; align-items:center; gap:10px; background:var(--soft); border:3px solid var(--line); border-radius:22px; padding:8px 12px; flex-wrap:wrap}
+.brow .rk{width:38px; height:38px; flex:none; border-radius:50%; display:grid; place-items:center; font-weight:800; background:#fff; border:2.5px solid var(--line); font-size:1.1rem}
+.brow .nm{font-weight:800; font-size:1.15rem; flex:1; min-width:100px}
+.brow .pts{font-weight:800; color:#C8901A; font-variant-numeric:tabular-nums; min-width:70px}
+.brow .acts{display:flex; gap:6px; flex-wrap:wrap}
+
+.cert{width:100%; background:#FFFDF6; border:6px double #F0B429; border-radius:30px; padding:26px 22px; display:flex; flex-direction:column; align-items:center; gap:6px}
+.cert .m{width:120px; height:120px}
+.cert .t1{font-size:clamp(1.5rem, 4vw, 2.2rem); font-weight:800; color:var(--pink-d); line-height:1.2}
+.cert .t2{font-family:var(--mono); font-weight:700; letter-spacing:.06em; color:#7A60D6; direction:ltr}
+.cert .who{font-size:clamp(1.8rem, 5vw, 2.8rem); font-weight:800; border-bottom:3px dashed #F0B429; padding:0 20px; min-width:60%}
+.cert .meta{display:flex; gap:10px 22px; flex-wrap:wrap; justify-content:center; font-weight:800; color:var(--muted)}
+.cert .sig{font-weight:800; color:var(--mint-d)}
+.cert.locked{filter:grayscale(.7); opacity:.75}
+
+#confetti{position:fixed; inset:0; pointer-events:none; z-index:70}
+.loading-note{font-weight:700; color:var(--muted)}
+
+.speed{max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:18px; padding-top:10px}
+.speed-top{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+.score{font-size:2rem; font-weight:800; color:var(--pink-d); font-variant-numeric:tabular-nums}
+.timer{flex:1; min-width:160px; height:22px; background:#fff; border:3px solid var(--line); border-radius:999px; overflow:hidden}
+.timer i{display:block; height:100%; background:linear-gradient(90deg, var(--mint), var(--sun)); border-radius:999px; transition:width .25s linear}
+.timer.low i{background:var(--pink)}
+
+@media (max-width:640px){
+  body{font-size:17px}
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .hero-m{display:none}
+  .editor{height:270px}
+  .code-area pre,.code-area textarea{font-size:15px; line-height:25px}
+  .gutter{font-size:15px; line-height:25px; width:38px}
+  .pill{padding:1px 10px; font-size:.9rem}
+  .brand span{display:none}
+  .chip{font-size:14px}
+}
+</style>
+</head>
+<body>
+
+<div class="deco" aria-hidden="true">
+  <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+  <span class="spark" style="top:22%; right:12%">✦</span><span class="spark" style="top:48%; left:6%; animation-delay:1s">✦</span><span class="spark" style="top:76%; right:24%; animation-delay:2s">✦</span>
+</div>
+
+<header class="top">
+  <div class="top-in">
+    <button class="brand" id="brandBtn" aria-label="الرجوع للخريطة"><span id="brandM"></span><span>مغامرة سمسم</span></button>
+    <div class="stats">
+      <span class="pill xp" title="نقاط الخبرة">XP <b id="xpVal">0</b></span>
+      <span class="pill" title="النجوم"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.8 5.7 21.4l1.5-7.1L1.8 9.4 9 8.6z" fill="#FFD95E" stroke="#E0AE22" stroke-width="1.5" stroke-linejoin="round"/></svg><b id="starVal">0</b></span>
+      <span class="pill rank" id="rankVal">بيضة صغنونة</span>
+      <button class="iconbtn" id="soundBtn" aria-label="الصوت"></button>
+    </div>
+  </div>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="star" viewBox="0 0 24 24"><path d="M12 2l3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.8 5.7 21.4l1.5-7.1L1.8 9.4 9 8.6z" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="3" fill="currentColor"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.6"/></symbol>
+  </defs>
+</svg>
+
+<main class="wrap" id="app"><p class="loading-note" style="padding-top:40px">جاري تحميل اللعبة…</p></main>
+<canvas id="confetti" hidden></canvas>
+<div id="modalRoot"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
+<script>
+(function(){
+"use strict";
+
+/* ===================== المنهج: 12 حصة في 3 مراحل ===================== */
+const WORLDS = [
+  {name:"شفرة التواصل", ses:"الحصة 1", e:"🛸", token:"print · input", c:"#FFD1DF", b:"#F49AB8", desc:"print بتخلّي الكمبيوتر يتكلم، و input بتخليه يسمعنا. هنبني شات بوت فضائي!", sticker:"صحن البوت الفضائي"},
+  {name:"صندوق الأسرار", ses:"الحصة 2", e:"🧁", token:"x = 5", c:"#FFDCC2", b:"#F2A774", desc:"المتغير صندوق عليه اسم وجواه سر. هنفتح متجر الأبطال ونعمل بروفايل اللاعب.", sticker:"كب كيك الأسرار"},
+  {name:"مصنع الكلمات", ses:"إضافي", e:"🎀", token:"\"abc\"", c:"#E6DAFF", b:"#B49BF0", desc:"مستوى زيادة للأبطال: نقص ونلزق ونلعب بالنصوص.", sticker:"فيونكة الكلمات"},
+  {name:"آلة الزمن الحسابية", ses:"الحصة 3", e:"⏳", token:"+ - * / int()", c:"#C9F2DF", b:"#6FD1A6", desc:"بايثون حاسبة خارقة! هنحسب عشنا كام يوم، ونقسم حساب مطعم الفضاء.", sticker:"ساعة آلة الزمن"},
+  {name:"حارس البوابة", ses:"الحصة 4", e:"🏰", token:"if / else", c:"#CFE8FF", b:"#7DB8F2", desc:"البواب بيسألك كلمة السر: لو صح يدخلك، لو غلط توقع في المصيدة!", sticker:"قلعة الحارس"},
+  {name:"حجر ورقة مقص", ses:"الحصة 5", e:"✂️", token:"elif · random", c:"#FFC9C9", b:"#F28B8B", desc:"الشرط المتعدد ومكتبة الحظ. هنلعب حجر ورقة مقص ضد الكمبيوتر بنظام نقاط.", sticker:"مقص البطولة"},
+  {name:"صائد الأرقام", ses:"الحصة 6", e:"🎯", token:"while · break", c:"#FFF0B3", b:"#F2C94C", desc:"حلقة while بتكرر لحد ما نقولها تقف. هنعمل لعبة خمّن الرقم السري.", sticker:"هدف الصياد"},
+  {name:"إطلاق الصاروخ", ses:"الحصة 7", e:"🚀", token:"for · range()", c:"#C6F3F2", b:"#5CCBC8", desc:"for خطوات عددها معروف. عد تنازلي للصاروخ وجدول ضرب لأي رقم.", sticker:"صاروخ الإطلاق"},
+  {name:"حقيبة المخترع", ses:"الحصة 8", e:"🎒", token:"[ ] .append()", c:"#E3F7C2", b:"#9ACD5A", desc:"القائمة شنطة ظهر بتشيل حاجات كتير. هنعمل شنطة أدوات البطل.", sticker:"شنطة المخترع"},
+  {name:"الآلات السحرية", ses:"الحصة 9", e:"🔮", token:"def f(x):", c:"#F3D9FF", b:"#C98BE8", desc:"الدالة زرار سحري إنت اللي بتصنعه. هنحسب قوة ضربة البطل.", sticker:"كرة السحر"},
+  {name:"خزنة الحلوى", ses:"إضافي", e:"🍬", token:"{k: v}", c:"#F1E9DA", b:"#C9A56E", desc:"مستوى زيادة للأبطال: القواميس بتربط كل اسم بقيمته.", sticker:"حلوى الخزنة"},
+  {name:"مشروع التخرج", ses:"الحصة 10 و 11", e:"🏆", token:"Final Boss", c:"#FFE6A6", b:"#F0B429", desc:"نجمع كل حاجة: تحديات الأبطال، لعبة المشنوق، ومغامرة المتاهة.", sticker:"كأس الأبطال"}
+];
+const PHASES = [
+  {t:"🔴 المرحلة الأولى: البداية والاستكشاف", ws:[0,1,2,3,4]},
+  {t:"🟡 المرحلة التانية: المنطق والتكرار", ws:[5,6,7]},
+  {t:"🟢 المرحلة التالتة: المهارات المتقدمة والمشروع النهائي", ws:[8,9,10,11]}
+];
+const KINDS = {
+  learn:{e:"📖", n:"اشرح واتدرّب"}, play:{e:"🎮", n:"العب"}, quest:{e:"🏆", n:"تحدي الحصة"},
+  fix:{e:"🔧", n:"صلّح الغلطة"}, order:{e:"🧩", n:"رتّب الكود"}, predict:{e:"🔮", n:"خمّن الناتج"}
+};
+
+const L = [];
+const learn = o => L.push(Object.assign({type:"learn"}, o));
+const quest = o => L.push(Object.assign({type:"quest"}, o));
+const play = o => L.push(Object.assign({type:"play"}, o));
+const fix = o => L.push(Object.assign({type:"fix"}, o));
+const order = o => L.push(Object.assign({type:"order"}, o));
+const predict = o => L.push(Object.assign({type:"predict"}, o));
+
+/* ---------- الحصة 1: شفرة التواصل ---------- */
+learn({id:"p1", w:0, title:"أول كلمة",
+ lesson:[{p:"الكمبيوتر زي شاشة سحرية بتسمع كلامنا. الأمر `print` بيخليه **يتكلم**: يكتب أي حاجة على الشاشة. الكلام بنحطه جوه قوسين `( )` وبين علامتين تنصيص `\" \"`."},
+  {code:`print("أهلاً يا عالم")`, out:"أهلاً يا عالم"},
+  {tip:"الأوامر بتتكتب بالحروف الإنجليزي الصغيرة: `print` مش `Print`. أما الكلام اللي جوه التنصيص فاكتبه بأي لغة."}],
+ quiz:{q:"أنهي سطر صح؟", opts:[`print("مرحبا")`, `print(مرحبا)`, `Print("مرحبا")`, `print "مرحبا"`], a:0, why:"الأمر بحروف صغيرة، والكلام بين قوسين وعلامتين تنصيص."},
+ task:"اطبع الجملة دي بالظبط: أنا مبرمج صغير", starter:"# اكتب الكود تحت السطر ده\n", expected:"أنا مبرمج صغير",
+ need:[[/print\s*\(/, "لازم تستخدم الأمر print"]], hint:"print(\"...\")", solution:`print("أنا مبرمج صغير")`});
+
+learn({id:"p2", w:0, title:"سطور كتير",
+ lesson:[{p:"كل `print` بتكتب سطر جديد. الكمبيوتر بيقرا الكود من فوق لتحت، سطر سطر."},
+  {code:`print("واحد")\nprint("اتنين")\nprint("تلاتة")`, out:"واحد\nاتنين\nتلاتة"}],
+ quiz:{q:"الكود ده هيطبع كام سطر؟", code:`print("أ")\nprint("ب")\nprint("ج")`, opts:["سطر واحد","3 سطور","سطرين","ولا سطر"], a:1, why:"كل print بتعمل سطر لوحدها."},
+ task:"اطبع 3 سطور بالترتيب ده:", expectShow:true, starter:"# 3 أوامر print\n", expected:"صباح الخير\nأنا اسمي سمسم\nبحب بايثون",
+ extra:c=> (c.match(/print\s*\(/g)||[]).length>=3 ? null : "استخدم 3 أوامر print، واحد لكل سطر.",
+ hint:"print(\"صباح الخير\")\nprint(...)\nprint(...)", solution:`print("صباح الخير")\nprint("أنا اسمي سمسم")\nprint("بحب بايثون")`});
+
+learn({id:"p6", w:0, title:"الفاصلة السحرية",
+ lesson:[{p:"نقدر نحط أكتر من حاجة جوه `print` ونفصل بينهم بفاصلة `,`. بايثون بيحط مسافة بينهم لوحده، وينفع نخلط كلام وأرقام."},
+  {code:`print("عندي", 3, "قطط")`, out:"عندي 3 قطط"},
+  {tip:"`#` بتعمل **تعليق**: بايثون بيتجاهل أي حاجة بعدها. بنستخدمها علشان نكتب ملاحظات لنفسنا."}],
+ quiz:{q:"إيه اللي هيتطبع؟", code:`print("سمسم", 7)  # ده تعليق`, opts:["سمسم 7","سمسم7","سمسم, 7","سمسم 7 # ده تعليق"], a:0, why:"الفاصلة بتحط مسافة، والتعليق مش بيتطبع."},
+ task:"استخدم الفاصلة واطبع: عمري 9 سنين — باستخدام المتغير age.", starter:"age = 9\n", expected:"عمري 9 سنين",
+ need:[[/,\s*age\s*,/, "حط age بين فاصلتين جوه print"]], hint:"print(\"عمري\", age, \"سنين\")", solution:`age = 9\nprint("عمري", age, "سنين")`});
+
+learn({id:"m2", w:0, title:"البرنامج بيسمعك",
+ lesson:[{p:"`input()` بتخلي الكمبيوتر **يسمعنا**: يستنى المستخدم يكتب حاجة، ويحفظها في صندوق. اللي بيتكتب بيرجع **كنص**."},
+  {code:`name = input("اسمك إيه؟ ")\nprint("أهلاً يا " + name)`, out:"أهلاً يا سارة"},
+  {tip:"علامة `+` بين النصوص بتلزقهم في بعض. ومتنساش المسافة بعد كلمة «يا»."}],
+ quiz:{q:"input() بترجع نوع إيه؟", opts:["رقم دايماً","نص دايماً","حسب اللي اتكتب","ولا حاجة"], a:1, why:"input بترجع نص دايماً."},
+ task:"اسأل المستخدم عن اسمه واطبع: أهلاً يا + الاسم.", starter:"name = input(\"اسمك إيه؟ \")\n", stdin:"مريم",
+ tests:[{inputs:["مريم"], expected:"أهلاً يا مريم"},{inputs:["يوسف"], expected:"أهلاً يا يوسف"}],
+ need:[[/input\s*\(/, "استخدم input()"]], hint:"print(\"أهلاً يا \" + name)", solution:`name = input("اسمك إيه؟ ")\nprint("أهلاً يا " + name)`});
+
+play({id:"pl1", w:0, title:"شات بوت فضائي",
+ story:"يلا نبني مع بعض **شات بوت فضائي** بيرحب بينا! دوس «شغّل والعب»، ولما البوت يسألك اكتب اسمك في الخانة الصفرا ودوس Enter.",
+ code:`print("👽 بيب بوب! أنا بوت من كوكب بايثون")\nname = input("ما اسمك يا بطل؟ ")\nprint("مرحباً بك في كوكب بايثون يا " + name + "! 🚀")\n`,
+ ideas:["غيّر اسم الكوكب لاسم من اختراعك.","خلّي البوت يسألك عن سنك ويرد عليك.","العبوها جماعي: كل واحد يكتب اسمه والفصل يقرا رد البوت."], stdin:["سمسم"]});
+
+predict({id:"p4", w:0, title:"خمّن يا شاطر", code:`print("3 + 4")\nprint(3 + 4)`,
+ opts:["3 + 4\n7","7\n7","3 + 4\n3 + 4","7\n3 + 4"], a:0, why:"الأول بين تنصيص فاتكتب زي ما هو، والتاني اتحسب."});
+
+fix({id:"p5", w:0, title:"القوس الهربان", story:"يا خبر! سمسم كتب سطرين وكل سطر فيه حاجة ناقصة. البرنامج مش راضي يشتغل.",
+ task:"صلّح الكود علشان يطبع السطرين دول:", expectShow:true, expected:"أنا بحب البرمجة\nسمسم ثعبان لطيف",
+ starter:`print("أنا بحب البرمجة"\nprint("سمسم ثعبان لطيف)\n`,
+ hint:"السطر الأول ناقصه قوس ) في الآخر، والتاني ناقصه علامة \" قبل القوس.", solution:`print("أنا بحب البرمجة")\nprint("سمسم ثعبان لطيف")`});
+
+quest({id:"qc", w:0, title:"البوت بيتعرّف عليك",
+ lesson:[{p:"نقدر نسأل أكتر من سؤال، ونحفظ كل إجابة في صندوق لوحدها، وبعدين نطبعهم مع بعض في جملة واحدة بعلامة `+`."},
+  {code:`animal = input("حيوانك المفضل؟ ")\nprint("أنا كمان بحب " + animal)`, out:"أنا كمان بحب القطط"}],
+ quiz:{q:"لو المستخدم كتب أحمر، إيه اللي هيتطبع؟", code:`c = input()\nprint("لونك " + c)`, opts:["لونك أحمر","لونك c","لونك + أحمر","أحمر"], a:0, why:"c بقت شايلة كلمة أحمر، و + لزقتها في الجملة."},
+ task:"خلّي البوت يسأل عن لونك المفضل وبعدين أكلتك المفضلة، ويطبع رسالة مجمّعة زي كده: لونك المفضل أحمر وأكلتك المفضلة بيتزا",
+ starter:"color = input(\"لونك المفضل إيه؟ \")\n", stdin:"أحمر\nبيتزا",
+ tests:[{inputs:["أحمر","بيتزا"], expected:"لونك المفضل أحمر وأكلتك المفضلة بيتزا"},{inputs:["أزرق","كشري"], expected:"لونك المفضل أزرق وأكلتك المفضلة كشري"}],
+ need:[[/input[\s\S]*input/, "اسأل سؤالين بـ input()"]],
+ hint:"food = input(\"أكلتك المفضلة إيه؟ \")\nprint(\"لونك المفضل \" + color + \" وأكلتك المفضلة \" + food)",
+ solution:`color = input("لونك المفضل إيه؟ ")\nfood = input("أكلتك المفضلة إيه؟ ")\nprint("لونك المفضل " + color + " وأكلتك المفضلة " + food)`});
+
+/* ---------- الحصة 2: صندوق الأسرار ---------- */
+learn({id:"v1", w:1, title:"صندوق باسم",
+ lesson:[{p:"المتغير هو **صندوق** بنكتب عليه اسم، وبنشيل جواه حاجة: اسم، رقم، أو سر! علامة `=` معناها: حط القيمة دي في الصندوق ده."},
+  {code:`score = 10\nprint(score)\nscore = score + 5\nprint(score)`, out:"10\n15"},
+  {tip:"اسم الصندوق بالإنجليزي من غير مسافات. لو كلمتين: `my_score`."}],
+ quiz:{q:"إيه اللي هيطبعه الكود؟", code:`x = 5\nx = 8\nprint(x)`, opts:["5","8","13","x"], a:1, why:"الصندوق بيشيل آخر قيمة اتحطت فيه."},
+ task:"كان معاك 12 بلونة، وطار منهم 5. اعمل متغير balloons = 12 ومتغير flew = 5، واطبع اللي فاضل باستخدامهم.",
+ starter:"balloons = 12\n# كمّل هنا\n", expected:"7",
+ need:[[/flew\s*=/, "اعمل المتغير flew"],[/balloons\s*-\s*flew/, "اطرح flew من balloons"]],
+ hint:"flew = 5\nprint(balloons - flew)", solution:`balloons = 12\nflew = 5\nprint(balloons - flew)`});
+
+play({id:"pl2", w:1, title:"متجر الأبطال",
+ story:"أهلاً بيك في **متجر الأبطال الخارقين**! البطل معاه صندوق فيه ذهب، وصندوق فيه رسالة القوة. شغّل البرنامج وشوف هيشتري إيه.",
+ code:`hero = "نينجا"\ngold = 50\npower = "قوة البرق ⚡"\n\nprint("البطل:", hero)\nprint("رسالة القوة:", power)\nprint("معاك ذهب:", gold)\n\nsword = 30\ngold = gold - sword\nprint("اشتريت سيف ⚔️ وفاضلك", gold, "ذهب")\n`,
+ ideas:["غيّر اسم البطل ورسالة القوة.","غيّر سعر السيف وشوف الذهب هيبقى كام.","ضيف درع 🛡️ سعره 15 ذهب واشتريه كمان."]});
+
+learn({id:"v2", w:1, title:"نص ولا رقم؟",
+ lesson:[{p:"كل صندوق ليه **نوع**: نص (string) زي `\"5\"` ورقم (int) زي `5`. لما نجمع نصين بيتلزقوا، ولما نجمع رقمين بيتحسبوا."},
+  {code:`print("3" + "4")\nprint(3 + 4)\nprint(int("3") + 4)`, out:"34\n7\n7"},
+  {tip:"`int()` بتحوّل النص لرقم، و`str()` بتحوّل الرقم لنص."}],
+ quiz:{q:"إيه ناتج الكود ده؟", code:`print("3" + "4")`, opts:["7","34","3 + 4","غلطة"], a:1, why:"الاتنين نصوص فبيتلزقوا."},
+ task:"x و y متخزنين كنصوص. حوّلهم لأرقام واطبع مجموعهم (المفروض 15 مش 105).",
+ starter:"x = \"10\"\ny = \"5\"\n# اطبع المجموع هنا\n", expected:"15",
+ need:[[/int\s*\(/, "استخدم int()"]], avoid:[[/print\s*\(\s*15\s*\)/, "خلي بايثون هو اللي يجمع"]],
+ hint:"print(int(x) + int(y))", solution:`x = "10"\ny = "5"\nprint(int(x) + int(y))`});
+
+learn({id:"v3", w:1, title:"الجملة السحرية f",
+ lesson:[{p:"لو حطينا حرف `f` قبل التنصيص، نقدر نحط الصناديق جوه الجملة بين `{ }` وبايثون يبدّلها بقيمتها."},
+  {code:`name = "ليلى"\nage = 9\nprint(f"أنا {name} وعندي {age} سنين")`, out:"أنا ليلى وعندي 9 سنين"}],
+ quiz:{q:"إيه اللي هيطبعه؟", code:`n = 3\nprint(f"عندي {n} قطط")`, opts:["عندي {n} قطط","عندي n قطط","عندي 3 قطط","غلطة"], a:2, why:"حرف f بيخلي {n} تتبدل بـ 3."},
+ task:"استخدم f-string واطبع: القطة عندها 4 أرجل — باستخدام المتغيرين.",
+ starter:"animal = \"القطة\"\nlegs = 4\n", expected:"القطة عندها 4 أرجل",
+ need:[[/f["']/, "ابدأ بحرف f قبل التنصيص"],[/\{\s*legs\s*\}/, "حط {legs} جوه الجملة"],[/\{\s*animal\s*\}/, "حط {animal} جوه الجملة"]],
+ hint:"print(f\"{animal} عندها {legs} أرجل\")", solution:`animal = "القطة"\nlegs = 4\nprint(f"{animal} عندها {legs} أرجل")`});
+
+predict({id:"v4p", w:1, title:"الصندوق بيكبر", code:`x = 2\nx = x * 3\nx = x + 1\nprint(x)`, opts:["7","6","3","9"], a:0, why:"x بقت 2 ← 6 ← 7."});
+
+fix({id:"v5", w:1, title:"اسم متلخبط", story:"سمسم أكل شوية كوكيز وعايز يعرف فاضل كام، بس البرنامج بيقول NameError!",
+ task:"صلّح الكود علشان يطبع عدد الكوكيز اللي فاضلة.", expected:"5", starter:`cookies = 8\neaten = 3\nprint(cookie - eaten)\n`,
+ hint:"بص على اسم المتغير جوه print. هو اتعرّف إزاي فوق؟", solution:`cookies = 8\neaten = 3\nprint(cookies - eaten)`});
+
+learn({id:"v6", w:1, title:"بدّل الكوبايات",
+ lesson:[{p:"في بايثون نقدر نبدّل قيمة صندوقين في سطر واحد بالحركة دي:"},
+  {code:`a = 1\nb = 2\na, b = b, a\nprint(a, b)`, out:"2 1"}],
+ quiz:{q:"إيه اللي هيتطبع؟", code:`x = "شاي"\ny = "قهوة"\nx, y = y, x\nprint(x)`, opts:["شاي","قهوة","شاي قهوة","غلطة"], a:1, why:"بعد التبديل x بقت قهوة."},
+ task:"cup1 فيها عصير و cup2 فيها لبن. بدّلهم، وبعدين اطبع cup1 ثم cup2.",
+ starter:"cup1 = \"عصير\"\ncup2 = \"لبن\"\n", expected:"لبن\nعصير",
+ avoid:[[/print\s*\(\s*["']/, "اطبع المتغيرات نفسها، متكتبش الكلمة بإيدك"]],
+ hint:"cup1, cup2 = cup2, cup1", solution:`cup1 = "عصير"\ncup2 = "لبن"\ncup1, cup2 = cup2, cup1\nprint(cup1)\nprint(cup2)`});
+
+quest({id:"qp", w:1, title:"بروفايل اللاعب",
+ lesson:[{p:"في الألعاب كل لاعب ليه **بروفايل**: اسم (نص) وصحة (رقم)، وكل معلومة في صندوق لوحدها."},
+  {code:`player_level = 3\nplayer_team = "الأحمر"\nprint("المستوى:", player_level)\nprint("الفريق:", player_team)`, out:"المستوى: 3\nالفريق: الأحمر"}],
+ quiz:{q:"أنهي صندوق فيه رقم مش نص؟", opts:['health = 100','health = "100"','name = "سمسم"','name = "100"'], a:0, why:"الرقم من غير علامات تنصيص."},
+ task:"اعمل صندوق اسمه player_health قيمته 100، وصندوق اسمه player_name فيه اسم البطل اللي تختاره، واطبع البروفايل بالشكل ده:",
+ expectText:"اللاعب: (اسم البطل اللي اخترته)\nالصحة: 100", starter:"player_health = 100\n",
+ tests:[{inputs:[], check:out=>{ const ls = out.replace(/\r/g,"").trim().split("\n").map(s=>s.trim());
+   if(ls.length!==2) return "المفروض البروفايل يكون سطرين بالظبط.";
+   if(!/^اللاعب\s*:\s*\S/.test(ls[0])) return "أول سطر لازم يبدأ بـ «اللاعب:» وبعدها الاسم.";
+   if(!/^الصح[ةه]\s*:\s*100$/.test(ls[1])) return "تاني سطر لازم يكون: الصحة: 100";
+   return null; }}],
+ need:[[/player_health\s*=\s*100/, "اعمل player_health = 100"],[/player_name\s*=/, "اعمل الصندوق player_name"],[/print\s*\([^)]*player_name/, "اطبع player_name نفسه"],[/print\s*\([^)]*player_health/, "اطبع player_health نفسه"]],
+ hint:"player_name = \"سمسم\"\nprint(\"اللاعب:\", player_name)\nprint(\"الصحة:\", player_health)",
+ solution:`player_health = 100\nplayer_name = "سمسم"\nprint("اللاعب:", player_name)\nprint("الصحة:", player_health)`});
+
+/* ---------- إضافي: الكلمات ---------- */
+learn({id:"v4", w:2, title:"ألعاب الكلمات",
+ lesson:[{p:"النصوص ليها حيل: `len()` بتعد الحروف، و`.upper()` بتكبّر الحروف الإنجليزي، و`.lower()` بتصغّرها، والضرب بيكرر النص."},
+  {code:`word = "cat"\nprint(len(word))\nprint(word.upper())\nprint(word * 3)`, out:"3\nCAT\ncatcatcat"}],
+ quiz:{q:"إيه ناتج len(\"بايثون\")؟", opts:["5","6","7","بايثون"], a:1, why:"ب ا ي ث و ن = 6 حروف."},
+ task:"اطبع word بحروف كبيرة في سطر، وبعدين عدد حروفها في سطر.", starter:"word = \"python\"\n", expected:"PYTHON\n6",
+ need:[[/\.upper\s*\(/, "استخدم .upper()"],[/len\s*\(/, "استخدم len()"]], hint:"print(word.upper())\nprint(len(word))", solution:`word = "python"\nprint(word.upper())\nprint(len(word))`});
+
+learn({id:"s2", w:2, title:"مقص الكلمات",
+ lesson:[{p:"كل حرف في النص ليه رقم خانة **بيبدأ من 0**. ونقدر نقص حتة من النص بـ `[بداية:نهاية]` (النهاية مش داخلة)."},
+  {code:`word = "sunflower"\nprint(word[0])\nprint(word[-1])\nprint(word[0:3])`, out:"s\nr\nsun"}],
+ quiz:{q:"إيه ناتج \"candy\"[1]؟", opts:["c","a","n","y"], a:1, why:"c خانة 0، و a خانة 1."},
+ task:"word فيها rainbow. اطبع أول 4 حروف (rain) في سطر، وآخر 3 حروف (bow) في سطر.", starter:"word = \"rainbow\"\n", expected:"rain\nbow",
+ need:[[/\[[^\]]*:[^\]]*\]/, "استخدم المقص [ : ]"]], avoid:[[/print\s*\(\s*["']/, "خليها تتقص من word نفسها"]],
+ hint:"word[0:4] و word[4:7]", solution:`word = "rainbow"\nprint(word[0:4])\nprint(word[4:7])`});
+
+predict({id:"s3", w:2, title:"ضحكة سمسم", code:`laugh = "ha"\nprint(laugh * 3)`, opts:["hahaha","ha3","ha ha ha","غلطة"], a:0, why:"ضرب النص في 3 بيكرره 3 مرات لازقين في بعض."});
+
+learn({id:"s4", w:2, title:"بدّل الكلمة",
+ lesson:[{p:"`.replace(القديم, الجديد)` بتبدّل كلمة بكلمة جوه النص."},
+  {code:`s = "I like tea"\nprint(s.replace("tea", "milk"))`, out:"I like milk"}],
+ quiz:{q:"إيه ناتج \"aaa\".replace(\"a\", \"b\")؟", opts:["baa","bbb","aaa","b"], a:1, why:"replace بتبدّل كل مكان فيه a."},
+ task:"غيّر cats لـ dogs في الجملة واطبعها.", starter:"s = \"I love cats\"\n", expected:"I love dogs",
+ need:[[/\.replace\s*\(/, "استخدم .replace()"]], hint:"print(s.replace(\"cats\", \"dogs\"))", solution:`s = "I love cats"\nprint(s.replace("cats", "dogs"))`});
+
+fix({id:"s5", w:2, title:"رقم زعلان من النص", story:"سمسم عايز يطبع عمره، بس بايثون زعلان وبيقول TypeError: مينفعش نجمع نص على رقم!",
+ task:"صلّح الكود علشان يطبع: عمري 10", expected:"عمري 10", starter:`age = 10\nprint("عمري " + age)\n`,
+ extra:c=> /str\s*\(|f["']|,/.test(c) ? null : "حوّل الرقم لنص بـ str() أو استخدم f-string.",
+ hint:"print(\"عمري \" + str(age))", solution:`age = 10\nprint("عمري " + str(age))`});
+
+/* ---------- الحصة 3: آلة الزمن الحسابية ---------- */
+learn({id:"p3", w:3, title:"الكمبيوتر بيحسب",
+ lesson:[{p:"بايثون **حاسبة خارقة**! لو كتبنا أرقام من غير تنصيص بيحسبها: الجمع `+` والطرح `-` والضرب `*` والقسمة `/`."},
+  {code:`print(5 + 3)\nprint("5 + 3")`, out:"8\n5 + 3"},
+  {tip:"السطر الأول اتحسب، والتاني اتكتب زي ما هو لأنه بين علامتين تنصيص."}],
+ quiz:{q:"إيه اللي هيطلع على الشاشة؟", code:`print("2 + 2")`, opts:["4","2 + 2","22","غلطة"], a:1, why:"الكلام اللي بين تنصيص بيتكتب زي ما هو."},
+ task:"خلي بايثون يحسب 7 × 6 ويطبع الناتج. (علامة الضرب في بايثون هي *)", starter:"# متكتبش الناتج بنفسك\n", expected:"42",
+ need:[[/\*/, "استخدم علامة الضرب *"]], avoid:[[/42/, "متكتبش 42 بنفسك! خلي بايثون هو اللي يحسب"]], hint:"print(7 * 6)", solution:`print(7 * 6)`});
+
+learn({id:"m1", w:3, title:"آلة القسمة",
+ lesson:[{p:"عمليات زيادة: `//` القسمة الصحيحة من غير كسور، و`%` باقي القسمة، و`**` الأُس."},
+  {code:`print(17 / 5)\nprint(17 // 5)\nprint(17 % 5)\nprint(2 ** 3)`, out:"3.4\n3\n2\n8"},
+  {tip:"`%` مفيدة جداً: لو `n % 2` طلع 0 يبقى الرقم زوجي."}],
+ quiz:{q:"إيه ناتج 2 ** 3؟", opts:["6","5","8","9"], a:2, why:"2 × 2 × 2 = 8"},
+ task:"17 حلاية على 5 أطفال بالتساوي. اطبع نصيب كل طفل، وبعدين الحلويات اللي فاضلة.",
+ starter:"candies = 17\nkids = 5\n", expected:"3\n2", need:[[/\/\//, "استخدم //"],[/%/, "استخدم %"]],
+ hint:"print(candies // kids)\nprint(candies % kids)", solution:`candies = 17\nkids = 5\nprint(candies // kids)\nprint(candies % kids)`});
+
+learn({id:"m3", w:3, title:"حوّل لرقم!",
+ lesson:[{p:"الأرقام اللي جاية من `input()` بتيجي على شكل **نص**، فلازم نحولها لرقم حقيقي بـ `int()` علشان نجمع ونضرب!"},
+  {code:`n = int(input())\nprint(n * 2)`, out:"14"}],
+ quiz:{q:"المستخدم كتب 4. إيه اللي هيحصل؟", code:`x = input()\nprint(x + 1)`, opts:["هيطبع 5","هيطبع 41","غلطة TypeError","هيطبع 4"], a:2, why:"x نص، ومينفعش نجمعه على رقم."},
+ task:"اسأل عن سن المستخدم، واطبع سنه في عيد الميلاد الجاي.", starter:"", stdin:"9",
+ tests:[{inputs:["9"], expected:"10"},{inputs:["12"], expected:"13"}],
+ need:[[/input\s*\(/, "استخدم input()"],[/int\s*\(/, "حوّل لرقم بـ int()"]], hint:"age = int(input())\nprint(age + 1)", solution:`age = int(input())\nprint(age + 1)`});
+
+play({id:"pl3", w:3, title:"آلة الزمن",
+ story:"اركب **آلة الزمن**! اكتب سنك، والكود هيحسبلك إنت عشت تقريباً كام يوم وكام ساعة. 😮",
+ code:`print("⏳ أهلاً بيك في آلة الزمن!")\nage = int(input("عندك كام سنة؟ "))\ndays = age * 365\nhours = days * 24\nprint("إنت عشت تقريباً", days, "يوم!")\nprint("يعني حوالي", hours, "ساعة 😮")\n`,
+ ideas:["احسب الدقايق كمان (الساعة فيها 60 دقيقة).","احسب سنك هيبقى كام سنة 2050.","مين في الفصل عاش أكتر عدد ساعات؟"], stdin:["10"]});
+
+predict({id:"m4", w:3, title:"باقي ولا قسمة؟", code:`print(10 % 3)\nprint(10 // 3)`, opts:["1\n3","3\n1","3.3\n1","1\n1"], a:0, why:"10 ÷ 3 = 3 والباقي 1."});
+
+learn({id:"m5", w:3, title:"كاشير المخبز",
+ lesson:[{p:"البرنامج ممكن يقرا أكتر من مدخل، كل `input()` بتقرا قيمة جديدة بالترتيب."},
+  {code:`a = int(input())\nb = int(input())\nprint(a + b)`, out:"8"}],
+ quiz:{q:"لو المدخلات 2 ثم 5، الكود ده يطبع إيه؟", code:`a = int(input())\nb = int(input())\nprint(b - a)`, opts:["3","-3","7","25"], a:0, why:"a = 2 و b = 5، فـ 5 - 2 = 3."},
+ task:"اقرا سعر الكب كيك، وبعدين العدد اللي عايز تشتريه، واطبع الحساب الكلي.", starter:"", stdin:"5\n4",
+ tests:[{inputs:["5","4"], expected:"20"},{inputs:["12","3"], expected:"36"}],
+ need:[[/input[\s\S]*input/, "استخدم input() مرتين"]],
+ hint:"price = int(input())\ncount = int(input())\nprint(price * count)", solution:`price = int(input())\ncount = int(input())\nprint(price * count)`});
+
+order({id:"m6", w:3, title:"رتّب الحسبة", task:"رتّب السطور علشان البرنامج يقرا طول وعرض الكيكة ويطبع مساحتها. خلي بالك: فيه سطر زيادة!",
+ lines:["w = int(input())","h = int(input())","area = w * h","print(area)"], decoy:["print(w + h)"],
+ tests:[{inputs:["3","4"], expected:"12"},{inputs:["5","5"], expected:"25"}], hint:"لازم تقرا الأرقام الأول، بعدين تحسب، وفي الآخر تطبع."});
+
+quest({id:"qr", w:3, title:"حاسبة مطعم الفضاء",
+ lesson:[{p:"لما مجموعة أصحاب ياكلوا في مطعم الفضاء 🍔🪐، بنقسم الحساب عليهم. `//` بتدينا القسمة من غير كسور."},
+  {code:`bill = 90\npeople = 3\nprint("كل واحد هيدفع", bill // people)`, out:"كل واحد هيدفع 30"}],
+ quiz:{q:"إيه ناتج 100 // 3؟", opts:["33","33.3","34","1"], a:0, why:"// بتشيل الكسور: 33."},
+ task:"اقرا الحساب الكلي للمطعم، وبعدين عدد الأفراد، واطبع اللي كل واحد هيدفعه بالشكل ده: كل واحد هيدفع 30",
+ starter:"bill = int(input())\n", stdin:"120\n4",
+ tests:[{inputs:["120","4"], expected:"كل واحد هيدفع 30"},{inputs:["100","3"], expected:"كل واحد هيدفع 33"},{inputs:["50","5"], expected:"كل واحد هيدفع 10"}],
+ need:[[/\/\//, "استخدم // للقسمة"],[/int\s*\(\s*input[\s\S]*int\s*\(\s*input/, "حوّل المدخلين لأرقام بـ int(input())"]],
+ hint:"people = int(input())\nprint(\"كل واحد هيدفع\", bill // people)",
+ solution:`bill = int(input())\npeople = int(input())\nprint("كل واحد هيدفع", bill // people)`});
+
+/* ---------- الحصة 4: حارس البوابة ---------- */
+learn({id:"c1", w:4, title:"لو… وإلا",
+ lesson:[{p:"زي بواب القلعة اللي بيسألك: معاك كلمة السر؟ **لو** صح يدخلك (`if`)، **وإلا** يرفضك (`else`). لازم `:` في آخر السطر، والسطور اللي جوه تبدأ بـ 4 مسافات."},
+  {code:`age = 10\nif age >= 18:\n    print("تقدر تسوق")\nelse:\n    print("لسه بدري")`, out:"لسه بدري"},
+  {tip:"المقارنة: `>` أكبر، `<` أصغر، `>=` أكبر أو يساوي، `==` يساوي (علامتين!)، `!=` مش بيساوي."}],
+ quiz:{q:"إيه الناقص في الكود ده؟", code:`if x > 5\n    print("كبير")`, opts:["القوس","النقطتين : بعد الشرط","كلمة then","مفيش حاجة"], a:1, why:"سطر if لازم يخلص بـ :"},
+ task:"اقرا درجة الحرارة. لو أكبر من 30 اطبع: الجو حر، غير كده اطبع: الجو حلو", starter:"temp = int(input())\n", stdin:"35",
+ tests:[{inputs:["35"], expected:"الجو حر"},{inputs:["20"], expected:"الجو حلو"},{inputs:["30"], expected:"الجو حلو"}],
+ need:[[/\bif\b/, "استخدم if"],[/\belse\b/, "استخدم else"]],
+ hint:"if temp > 30:\n    print(\"الجو حر\")\nelse:\n    print(\"الجو حلو\")", solution:`temp = int(input())\nif temp > 30:\n    print("الجو حر")\nelse:\n    print("الجو حلو")`});
+
+play({id:"pl4", w:4, title:"العبور للقلعة",
+ story:"قدامك **باب القلعة** والبواب بيسألك كلمة السر! لو قلت «بايثون» الباب هيفتح، ولو غلطت هتوقع في المصيدة. جرّب الاتنين!",
+ code:`print("🏰 قدامك باب القلعة الكبير")\nprint("💂 البواب: قول كلمة السر!")\npassword = input("كلمة السر: ")\nif password == "بايثون":\n    print("🔓 فتح الباب! اتفضل يا بطل")\nelse:\n    print("💥 وقع في المصيدة!")\n`,
+ ideas:["غيّر كلمة السر لكلمة من اختراعك.","خلّي البواب يسأل سؤال فوازير بدل كلمة السر.","العبوها جماعي: واحد يخبي كلمة السر والباقي يخمّنوا."], stdin:["بايثون"]});
+
+learn({id:"c3", w:4, title:"و / أو",
+ lesson:[{p:"`and` يعني الشرطين لازم يكونوا صح. `or` يعني كفاية واحد. `not` بتعكس الإجابة."},
+  {code:`sunny = True\nhomework = False\nif sunny and homework:\n    print("يلا نلعب برة")\nelse:\n    print("خلّص الواجب الأول")`, out:"خلّص الواجب الأول"}],
+ quiz:{q:"إيه ناتج True and False ؟", opts:["True","False"], a:1, why:"and محتاجة الاتنين True."},
+ task:"اقرا رقم n. لو بين 1 و 10 (شاملهم) اطبع: جوه — غير كده: بره", starter:"n = int(input())\n", stdin:"5",
+ tests:[{inputs:["5"], expected:"جوه"},{inputs:["1"], expected:"جوه"},{inputs:["10"], expected:"جوه"},{inputs:["0"], expected:"بره"},{inputs:["11"], expected:"بره"}],
+ need:[[/\band\b/, "استخدم and"]], hint:"if n >= 1 and n <= 10:", solution:`n = int(input())\nif n >= 1 and n <= 10:\n    print("جوه")\nelse:\n    print("بره")`});
+
+fix({id:"c5", w:4, title:"المسافات التايهة", story:"البرنامج ده المفروض يقول الرقم موجب ولا لأ، بس فيه غلطتين في الكتابة.",
+ task:"صلّح الكود.", starter:`n = int(input())\nif n > 0\nprint("موجب")\nelse:\n    print("مش موجب")\n`, stdin:"5",
+ tests:[{inputs:["5"], expected:"موجب"},{inputs:["-2"], expected:"مش موجب"},{inputs:["0"], expected:"مش موجب"}],
+ hint:"سطر if ناقصه : في الآخر، وسطر print اللي تحته محتاج 4 مسافات في الأول.", solution:`n = int(input())\nif n > 0:\n    print("موجب")\nelse:\n    print("مش موجب")`});
+
+order({id:"c6", w:4, title:"زوجي ولا فردي؟", task:"رتّب السطور علشان البرنامج يقول الرقم زوجي ولا فردي. المسافات اللي في أول السطر مهمة!",
+ lines:["n = int(input())","if n % 2 == 0:","    print(\"زوجي\")","else:","    print(\"فردي\")"],
+ tests:[{inputs:["4"], expected:"زوجي"},{inputs:["7"], expected:"فردي"}], hint:"ابدأ بقراءة الرقم، وبعدين if وتحتها السطر بتاعها، وبعدين else وتحتها السطر بتاعها."});
+
+quest({id:"qt", w:4, title:"القطار السريع",
+ lesson:[{p:"`>=` معناها **أكبر من أو يساوي**. يعني `10 >= 10` صح، و`9 >= 10` غلط."},
+  {code:`speed = 80\nif speed >= 80:\n    print("سريع!")\nelse:\n    print("هادي")`, out:"سريع!"}],
+ quiz:{q:"إيه ناتج 10 >= 10 ؟", opts:["True","False"], a:0, why:"10 بتساوي 10، و >= بتقبل اليساوي."},
+ task:"اقرا عمر الطفل. لو 10 أو أكتر اطبع: مسموح لك بركوب القطار السريع — غير كده اطبع: القطار مخصص للأكبر سناً",
+ starter:"age = int(input())\n", stdin:"12",
+ tests:[{inputs:["12"], expected:"مسموح لك بركوب القطار السريع"},{inputs:["10"], expected:"مسموح لك بركوب القطار السريع"},{inputs:["7"], expected:"القطار مخصص للأكبر سناً"}],
+ need:[[/>=/, "استخدم >= علشان 10 نفسها تدخل"],[/\belse\b/, "استخدم else"]],
+ hint:"if age >= 10:\n    print(\"مسموح لك بركوب القطار السريع\")\nelse:\n    print(\"القطار مخصص للأكبر سناً\")",
+ solution:`age = int(input())\nif age >= 10:\n    print("مسموح لك بركوب القطار السريع")\nelse:\n    print("القطار مخصص للأكبر سناً")`});
+
+/* ---------- الحصة 5: حجر ورقة مقص ---------- */
+learn({id:"c2", w:5, title:"اختيارات كتير elif",
+ lesson:[{p:"لو أكتر من احتمالين نستخدم `elif` (وإلا لو). بايثون بيجرب بالترتيب، وأول شرط صح هو اللي بيتنفذ."},
+  {code:`light = "أصفر"\nif light == "أحمر":\n    print("قف")\nelif light == "أصفر":\n    print("استعد")\nelse:\n    print("امشي")`, out:"استعد"}],
+ quiz:{q:"إيه ناتج 5 == 5 ؟", opts:["True","False","5","10"], a:0, why:"== بتسأل: هل بيساووا بعض؟ أيوه = True."},
+ task:"اقرا درجة. 90 أو أكتر: ممتاز — 75 أو أكتر: جيد جدا — غير كده: حاول تاني", starter:"grade = int(input())\n", stdin:"80",
+ tests:[{inputs:["95"], expected:"ممتاز"},{inputs:["90"], expected:"ممتاز"},{inputs:["80"], expected:"جيد جدا"},{inputs:["75"], expected:"جيد جدا"},{inputs:["50"], expected:"حاول تاني"}],
+ need:[[/\belif\b/, "استخدم elif"]], hint:"if grade >= 90:\n    ...\nelif grade >= 75:\n    ...\nelse:\n    ...",
+ solution:`grade = int(input())\nif grade >= 90:\n    print("ممتاز")\nelif grade >= 75:\n    print("جيد جدا")\nelse:\n    print("حاول تاني")`});
+
+learn({id:"rnd", w:5, title:"زهر الحظ",
+ lesson:[{p:"إزاي نخلي الكمبيوتر **يفاجئنا**؟ `import random` بتجيب مكتبة الحظ السحرية. `random.randint(1, 6)` بتختار رقم عشوائي من 1 لـ 6 (الاتنين داخلين)، و`random.choice(قائمة)` بتختار حاجة عشوائية من قائمة."},
+  {code:`import random\nprint(random.choice(["🍎", "🍌", "🍇"]))`, out:"🍌 (أو فاكهة تانية كل مرة!)"}],
+ quiz:{q:"random.randint(1, 3) ممكن يطلع إيه؟", opts:["1 أو 2 أو 3","1 أو 2 بس","من 0 لـ 3","3 بس"], a:0, why:"randint بتشمل الرقمين اللي على الطرفين."},
+ task:"ارمي زهر: اطبع رقم عشوائي من 1 لـ 6. (سمسم هيشغّل برنامجك كذا مرة)", expectText:"رقم واحد من 1 لـ 6، بيتغير كل مرة", starter:"import random\n",
+ tests:[1,2,3,4].map(()=>({inputs:[], check:out=> /^[1-6]$/.test(out.trim()) ? null : "المفروض يطلع رقم واحد بس من 1 لـ 6."})),
+ need:[[/randint\s*\(\s*1\s*,\s*6\s*\)/, "استخدم random.randint(1, 6)"]], avoid:[[/print\s*\(\s*\d/, "متكتبش الرقم بإيدك، خلي الحظ يختار!"]],
+ hint:"print(random.randint(1, 6))", solution:`import random\nprint(random.randint(1, 6))`});
+
+play({id:"pl5", w:5, title:"حجر ورقة مقص ضد الكمبيوتر",
+ story:"العب **حجر ورقة مقص** ضد الكمبيوتر! الكمبيوتر بيختار بالحظ بـ `random.choice`، والكود بيقرر مين كسب بـ `if / elif / else`. اكتب اختيارك بالعربي.",
+ code:`import random\n\nchoices = ["حجر", "ورقة", "مقص"]\nplayer = input("اختار: حجر / ورقة / مقص ")\ncomputer = random.choice(choices)\nprint("🤖 الكمبيوتر اختار:", computer)\n\nif player == computer:\n    print("تعادل 🤝")\nelif player == "حجر" and computer == "مقص":\n    print("فزت! 🎉")\nelif player == "ورقة" and computer == "حجر":\n    print("فزت! 🎉")\nelif player == "مقص" and computer == "ورقة":\n    print("فزت! 🎉")\nelse:\n    print("خسرت 😅")\n`,
+ ideas:["العب 5 جولات وعد كام مرة كسبت.","ضيف اختيار رابع من اختراعك (زي «بئر» 🕳️).","العبوها في الفصل: الفصل كله ضد الكمبيوتر!"], stdin:["حجر"]});
+
+predict({id:"c4", w:5, title:"أنهي باب؟", code:`x = 7\nif x > 10:\n    print("كبير")\nelif x > 5:\n    print("وسط")\nelse:\n    print("صغير")`,
+ opts:["كبير","وسط","صغير","وسط\nصغير"], a:1, why:"7 مش أكبر من 10، بس أكبر من 5. وأول شرط صح بس هو اللي بيتنفذ."});
+
+learn({id:"rps1", w:5, title:"مين كسب؟",
+ lesson:[{p:"قواعد اللعبة: **الحجر** بيكسر المقص ✊، و**المقص** بيقص الورقة ✌️، و**الورقة** بتلف الحجر ✋. نقدر نكتب كل قاعدة بـ `and`، ونجمع القواعد بـ `or`."},
+  {code:`p = "حجر"\nc = "مقص"\nif p == "حجر" and c == "مقص":\n    print("فزت!")`, out:"فزت!"}],
+ quiz:{q:"اللاعب اختار ورقة والكمبيوتر حجر. مين كسب؟", opts:["فزت","خسرت","تعادل"], a:0, why:"الورقة بتلف الحجر."},
+ task:"اقرا اختيار اللاعب، وبعدين اختيار الكمبيوتر. اطبع: تعادل لو زي بعض — فزت لو اللاعب كسب — غير كده: خسرت",
+ starter:"player = input()\ncomputer = input()\n", stdin:"حجر\nمقص",
+ tests:[{inputs:["حجر","حجر"], expected:"تعادل"},{inputs:["حجر","مقص"], expected:"فزت"},{inputs:["ورقة","حجر"], expected:"فزت"},{inputs:["مقص","ورقة"], expected:"فزت"},{inputs:["حجر","ورقة"], expected:"خسرت"},{inputs:["مقص","حجر"], expected:"خسرت"}],
+ need:[[/\belif\b/, "استخدم elif"]],
+ hint:"if player == computer:\n    print(\"تعادل\")\nelif (player == \"حجر\" and computer == \"مقص\") or ...:\n    print(\"فزت\")\nelse:\n    print(\"خسرت\")",
+ solution:`player = input()\ncomputer = input()\nif player == computer:\n    print("تعادل")\nelif (player == "حجر" and computer == "مقص") or (player == "ورقة" and computer == "حجر") or (player == "مقص" and computer == "ورقة"):\n    print("فزت")\nelse:\n    print("خسرت")`});
+
+quest({id:"qs", w:5, title:"نظام النقاط",
+ lesson:[{p:"في الألعاب بنستخدم صندوق اسمه `score` بيبدأ من 0، وكل ما اللاعب يكسب نزوّده نقطة: `score += 1` (يعني `score = score + 1`)."},
+  {code:`score = 0\nwon = True\nif won:\n    score += 1\nprint("النقاط:", score)`, out:"النقاط: 1"}],
+ quiz:{q:"إيه اللي هيتطبع؟", code:`score = 5\nscore += 1\nprint(score)`, opts:["5","6","51","1"], a:1, why:"زودنا 1 على 5."},
+ task:"فعّل نظام النقاط: اطبع نتيجة الجولة (فزت / خسرت / تعادل)، ولو اللاعب فاز زوّد score بواحد. وفي الآخر اطبع: النقاط: + score",
+ starter:"score = 0\nplayer = input()\ncomputer = input()\n", stdin:"حجر\nمقص",
+ tests:[{inputs:["حجر","مقص"], expected:"فزت\nالنقاط: 1"},{inputs:["حجر","ورقة"], expected:"خسرت\nالنقاط: 0"},{inputs:["مقص","مقص"], expected:"تعادل\nالنقاط: 0"},{inputs:["ورقة","حجر"], expected:"فزت\nالنقاط: 1"}],
+ need:[[/score\s*\+=\s*1|score\s*=\s*score\s*\+\s*1/, "زوّد score بـ score += 1"]],
+ hint:"جوه فرع الفوز:\n    print(\"فزت\")\n    score += 1\nوفي الآخر برة الـ if:\nprint(\"النقاط:\", score)",
+ solution:`score = 0\nplayer = input()\ncomputer = input()\nif player == computer:\n    print("تعادل")\nelif (player == "حجر" and computer == "مقص") or (player == "ورقة" and computer == "حجر") or (player == "مقص" and computer == "ورقة"):\n    print("فزت")\n    score += 1\nelse:\n    print("خسرت")\nprint("النقاط:", score)`});
+
+/* ---------- الحصة 6: صائد الأرقام ---------- */
+learn({id:"f3", w:6, title:"الصاروخ while",
+ lesson:[{p:"`while` حلقة دايرية بنقول فيها للكمبيوتر: **فضّل كرر** الكود ده طول ما الشرط صح! لازم نغيّر حاجة جوه الحلقة علشان تخلص في الآخر."},
+  {code:`n = 3\nwhile n > 0:\n    print(n)\n    n = n - 1\nprint("خلصنا")`, out:"3\n2\n1\nخلصنا"}],
+ quiz:{q:"إيه مشكلة الكود ده؟", code:`x = 1\nwhile x < 5:\n    print(x)`, opts:["مفيش مشكلة","x مش بتتغير فالحلقة مش هتخلص","لازم for","print غلط"], a:1, why:"x هتفضل 1 للأبد."},
+ task:"عد تنازلي من 5 لحد 1 بـ while، وبعدها اطبع: انطلق!", starter:"count = 5\n", expected:"5\n4\n3\n2\n1\nانطلق!",
+ need:[[/\bwhile\b/, "استخدم while"]], hint:"while count > 0:\n    print(count)\n    count -= 1\nprint(\"انطلق!\")", solution:`count = 5\nwhile count > 0:\n    print(count)\n    count -= 1\nprint("انطلق!")`});
+
+fix({id:"f9", w:6, title:"الدوامة اللي مبتقفش", story:"سمسم دخل الدوامة ومش عارف يخرج! الحلقة دي بتلف للأبد.",
+ task:"صلّح الكود علشان يطبع من 1 لـ 5 ويقف.", expected:"1\n2\n3\n4\n5", starter:`n = 1\nwhile n <= 5:\n    print(n)\n`,
+ need:[[/\bwhile\b/, "خليك بـ while"]], hint:"جوه الحلقة زوّد n بواحد: n += 1 (بـ 4 مسافات قبلها).", solution:`n = 1\nwhile n <= 5:\n    print(n)\n    n += 1`});
+
+play({id:"pl6", w:6, title:"خمّن الرقم السري",
+ story:"الكمبيوتر اختار **رقم سري** من 1 لـ 10 بالحظ! فضّل خمّن لحد ما تجيبه. `while True` بتفضل تسألك، و`break` بتخرّج من الحلقة لما تكسب.",
+ code:`import random\n\nsecret = random.randint(1, 10)\nprint("🤫 اخترت رقم سري من 1 لـ 10. خمّنه!")\n\nwhile True:\n    guess = int(input("تخمينك: "))\n    if guess == secret:\n        print("🎯 برافو! جبته")\n        break\n    print("لأ، حاول تاني")\n`,
+ ideas:["خلّي الرقم من 1 لـ 100 (أصعب بكتير!).","العبوها كمسابقة: مين يجيبه في أقل محاولات؟"], stdin:["1","2","3","4","5","6","7","8","9","10"]});
+
+learn({id:"f10", w:6, title:"أكبر ولا أصغر؟",
+ lesson:[{p:"`while True` بتلف للأبد، و`break` بتخرّجنا من الحلقة فوراً. نقدر ندي اللاعب **تلميح**: الرقم السري أكبر ولا أصغر من تخمينه؟"},
+  {code:`while True:\n    word = input()\n    if word == "باي":\n        break\n    print("لسه هنا")`, out:"لسه هنا\nلسه هنا"}],
+ quiz:{q:"break بتعمل إيه؟", opts:["بتوقف البرنامج كله","بتخرج من الحلقة","بتعيد الحلقة من الأول","بتكسر الكمبيوتر"], a:1, why:"break بتخرج من الحلقة بس، والكود اللي بعدها يكمل."},
+ task:"الرقم السري 7. فضّل تقرا تخمينات: لو أصغر من 7 اطبع: الرقم أكبر — لو أكبر اطبع: الرقم أصغر — لو صح اطبع: صح! واخرج من الحلقة.",
+ starter:"secret = 7\nwhile True:\n    guess = int(input())\n", stdin:"3\n9\n7",
+ tests:[{inputs:["3","9","7"], expected:"الرقم أكبر\nالرقم أصغر\nصح!"},{inputs:["7"], expected:"صح!"},{inputs:["1","2","8","7"], expected:"الرقم أكبر\nالرقم أكبر\nالرقم أصغر\nصح!"}],
+ need:[[/\bbreak\b/, "استخدم break"]],
+ hint:"    if guess < secret:\n        print(\"الرقم أكبر\")\n    elif guess > secret:\n        print(\"الرقم أصغر\")\n    else:\n        print(\"صح!\")\n        break",
+ solution:`secret = 7\nwhile True:\n    guess = int(input())\n    if guess < secret:\n        print("الرقم أكبر")\n    elif guess > secret:\n        print("الرقم أصغر")\n    else:\n        print("صح!")\n        break`});
+
+quest({id:"qa", w:6, title:"عدّاد المحاولات",
+ lesson:[{p:"علشان نعرف اللاعب جاب الرقم في كام محاولة، نعمل عدّاد `tries = 0` ونزوّده واحد في كل لفة."},
+  {code:`tries = 0\nwhile tries < 3:\n    tries += 1\nprint("لفينا", tries, "مرات")`, out:"لفينا 3 مرات"}],
+ quiz:{q:"الحلقة لفّت 4 مرات وفي كل لفة tries += 1. لو tries بدأ من 0، بقى كام؟", opts:["3","4","5","0"], a:1, why:"0 + 1 + 1 + 1 + 1 = 4"},
+ task:"طوّر لعبة الرقم السري (7): اطبع التلميح (الرقم أكبر / الرقم أصغر) زي قبل كده، ولما يجيبه اطبع: صح! في 3 محاولات — بعدد المحاولات الحقيقي.",
+ starter:"secret = 7\ntries = 0\nwhile True:\n    guess = int(input())\n", stdin:"3\n9\n7",
+ tests:[{inputs:["3","9","7"], expected:"الرقم أكبر\nالرقم أصغر\nصح! في 3 محاولات"},{inputs:["7"], expected:"صح! في 1 محاولات"},{inputs:["5","6","10","8","7"], expected:"الرقم أكبر\nالرقم أكبر\nالرقم أصغر\nالرقم أصغر\nصح! في 5 محاولات"}],
+ need:[[/tries\s*\+=\s*1|tries\s*=\s*tries\s*\+\s*1/, "زوّد tries في كل محاولة"],[/\bbreak\b/, "استخدم break"]],
+ hint:"بعد سطر input مباشرة:\n    tries += 1\nولما يكسب:\n        print(f\"صح! في {tries} محاولات\")",
+ solution:`secret = 7\ntries = 0\nwhile True:\n    guess = int(input())\n    tries += 1\n    if guess < secret:\n        print("الرقم أكبر")\n    elif guess > secret:\n        print("الرقم أصغر")\n    else:\n        print(f"صح! في {tries} محاولات")\n        break`});
+
+/* ---------- الحصة 7: إطلاق الصاروخ ---------- */
+learn({id:"f1", w:7, title:"لفّة بـ for",
+ lesson:[{p:"`for` زي جري **عدد خطواته معروف** من الأول. `range(1, 6)` بتدينا من 1 لحد 5 (آخر رقم مش داخل)."},
+  {code:`for i in range(1, 4):\n    print("لفة رقم", i)`, out:"لفة رقم 1\nلفة رقم 2\nلفة رقم 3"},
+  {tip:"متنساش `:` والـ 4 مسافات قبل السطور اللي جوه الحلقة."}],
+ quiz:{q:"range(1, 4) بتطلع إيه؟", opts:["1 2 3 4","1 2 3","0 1 2 3","4"], a:1, why:"آخر رقم مش بيدخل."},
+ task:"اطبع الأرقام من 1 لحد 10، كل رقم في سطر — بـ print واحدة جوه for.", starter:"", expected:"1\n2\n3\n4\n5\n6\n7\n8\n9\n10",
+ need:[[/\bfor\b/, "استخدم for"],[/range\s*\(/, "استخدم range()"]], extra:c=> (c.match(/print\s*\(/g)||[]).length<=1 ? null : "استخدم print واحدة بس جوه الحلقة.",
+ hint:"for i in range(1, 11):\n    print(i)", solution:`for i in range(1, 11):\n    print(i)`});
+
+predict({id:"f5", w:7, title:"نطّات الكنغر", code:`for i in range(0, 10, 3):\n    print(i)`, opts:["0\n3\n6\n9","0\n3\n6","3\n6\n9","0\n1\n2"], a:0,
+ why:"الرقم التالت في range هو حجم النطة: 0، 3، 6، 9 (و 10 مش داخل)."});
+
+play({id:"pl7", w:7, title:"مؤشر إطلاق الصاروخ",
+ story:"العد التنازلي بدأ! `range(10, 0, -1)` بتعد **لورا**: من 10 لحد 1، والـ `-1` معناها انزل خطوة كل مرة. شغّل وعدّوا مع بعض بصوت عالي! 🚀",
+ code:`print("🧑‍🚀 استعد للإطلاق!")\nfor i in range(10, 0, -1):\n    print(i)\nprint("🚀 BOOM! 🚀")\n`,
+ ideas:["خلّي العد يبدأ من 20.","اطبع «الوقود:» جنب كل رقم.","خلّي العد ينزل 2 كل مرة."]});
+
+learn({id:"f2", w:7, title:"عدّاد الكنز",
+ lesson:[{p:"نقدر نلف على عناصر قائمة واحد واحد، ونجمع في متغير بيكبر كل لفة. `total += n` يعني `total = total + n`."},
+  {code:`total = 0\nfor n in [1, 2, 3]:\n    total += n\nprint(total)`, out:"6"}],
+ quiz:{q:"الحلقة دي هتلف كام مرة؟", code:`for x in ["أ", "ب", "ج", "د"]:\n    print(x)`, opts:["3","4","5","مرة واحدة"], a:1, why:"مرة لكل عنصر."},
+ task:"اجمع العملات بـ for واطبع المجموع (من غير sum).", starter:"coins = [3, 7, 2, 8]\ntotal = 0\n", expected:"20",
+ need:[[/\bfor\b/, "استخدم for"]], avoid:[[/sum\s*\(/, "اعملها من غير sum()"],[/print\s*\(\s*20\s*\)/, "خلي البرنامج يحسب بنفسه"]],
+ hint:"for c in coins:\n    total += c\nprint(total)", solution:`coins = [3, 7, 2, 8]\ntotal = 0\nfor c in coins:\n    total += c\nprint(total)`});
+
+learn({id:"f4", w:7, title:"صيد الزوجي",
+ lesson:[{p:"نقدر نحط `if` جوه `for` علشان نختار العناصر اللي بتحقق شرط."},
+  {code:`for n in range(1, 8):\n    if n % 3 == 0:\n        print(n)`, out:"3\n6"},
+  {tip:"`print` هنا جوه `if` اللي جوه `for`، فبتبدأ بـ 8 مسافات."}],
+ quiz:{q:"إمتى يبقى الرقم زوجي؟", opts:["n % 2 == 0","n / 2 == 0","n // 2 == 1","n == 2"], a:0, why:"باقي القسمة على 2 صفر."},
+ task:"اطبع الأرقام الزوجية بس من 1 لحد 20.", starter:"", expected:"2\n4\n6\n8\n10\n12\n14\n16\n18\n20",
+ need:[[/\b(for|while)\b/, "استخدم حلقة"],[/%/, "استخدم %"]], hint:"for n in range(1, 21):\n    if n % 2 == 0:\n        print(n)", solution:`for n in range(1, 21):\n    if n % 2 == 0:\n        print(n)`});
+
+order({id:"f6", w:7, title:"رتّب العدّاد", task:"رتّب السطور علشان البرنامج يجمع الأرقام ويطبع المجموع مرة واحدة بس في الآخر. فيه سطر زيادة!",
+ lines:["total = 0","for n in [4, 5, 6]:","    total = total + n","print(total)"], decoy:["    print(total)"], expected:"15",
+ hint:"المجموع يبدأ صفر قبل الحلقة، والطباعة برة الحلقة (من غير مسافات)."});
+
+learn({id:"f8", w:7, title:"هرم النجوم",
+ lesson:[{p:"تفتكر ضرب النص؟ `\"*\" * 3` بتطلع `***`. لو حطيناها في حلقة نرسم أشكال!"},
+  {code:`for i in range(1, 4):\n    print("🌸" * i)`, out:"🌸\n🌸🌸\n🌸🌸🌸"}],
+ quiz:{q:"إيه ناتج \"*\" * 4؟", opts:["****","*4","4*","* * * *"], a:0, why:"بيكرر النجمة 4 مرات."},
+ task:"ارسم هرم من 5 أدوار بالنجمة *: أول سطر نجمة واحدة وآخر سطر 5 نجوم.", starter:"", expected:"*\n**\n***\n****\n*****",
+ need:[[/\bfor\b/, "استخدم for"]], extra:c=> (c.match(/print\s*\(/g)||[]).length<=1 ? null : "استخدم print واحدة جوه الحلقة.",
+ hint:"for i in range(1, 6):\n    print(\"*\" * i)", solution:`for i in range(1, 6):\n    print("*" * i)`});
+
+quest({id:"f7", w:7, title:"جدول الضرب",
+ lesson:[{p:"الحلقة مع f-string بتعمل جداول حلوة في سطرين بس!"},
+  {code:`for i in range(1, 4):\n    print(f"2 x {i} = {2 * i}")`, out:"2 x 1 = 2\n2 x 2 = 4\n2 x 3 = 6"}],
+ quiz:{q:"جوه f-string، {2 * 5} بتطلع إيه؟", opts:["2 * 5","10","25","{10}"], a:1, why:"بايثون بيحسب اللي جوه { } الأول."},
+ task:"اقرا أي رقم يختاره الطفل، واطبع جدول ضربه من 1 لـ 10 بالشكل ده: 3 x 1 = 3", starter:"n = int(input())\n", stdin:"3",
+ tests:[{inputs:["3"], expected:Array.from({length:10},(_,i)=>`3 x ${i+1} = ${3*(i+1)}`).join("\n")},{inputs:["7"], expected:Array.from({length:10},(_,i)=>`7 x ${i+1} = ${7*(i+1)}`).join("\n")}],
+ need:[[/\bfor\b/, "استخدم for"]], hint:"for i in range(1, 11):\n    print(f\"{n} x {i} = {n * i}\")", solution:`n = int(input())\nfor i in range(1, 11):\n    print(f"{n} x {i} = {n * i}")`});
+
+/* ---------- الحصة 8: حقيبة المخترع ---------- */
+learn({id:"l1", w:8, title:"شنطة الحاجات",
+ lesson:[{p:"بدل صندوق واحد لحاجة واحدة، **القائمة** (list) شنطة ظهر بنشيل فيها حاجات كتير ورا بعض جوه `[ ]`. كل حاجة ليها رقم خانة، **والعد من 0**!"},
+  {code:`fruits = ["تفاح", "موز", "مانجا"]\nprint(fruits[0])\nprint(fruits[-1])`, out:"تفاح\nمانجا"},
+  {tip:"`[-1]` معناها آخر عنصر، مهما كان طول القائمة."}],
+ quiz:{q:"إيه اللي هيتطبع؟", code:`fruits = ["تفاح", "موز", "مانجا"]\nprint(fruits[1])`, opts:["تفاح","موز","مانجا","غلطة"], a:1, why:"تفاح [0]، موز [1]."},
+ task:"اطبع أول كوكب في القائمة، وبعدين آخر كوكب.", starter:"planets = [\"عطارد\", \"الزهرة\", \"الأرض\", \"المريخ\"]\n", expected:"عطارد\nالمريخ",
+ need:[[/\[\s*0\s*\]/, "استخدم [0]"]], avoid:[[/print\s*\(\s*["']/, "اطبع من القائمة نفسها"]], hint:"print(planets[0])\nprint(planets[-1])", solution:`planets = ["عطارد", "الزهرة", "الأرض", "المريخ"]\nprint(planets[0])\nprint(planets[-1])`});
+
+learn({id:"l2", w:8, title:"زوّد في الشنطة",
+ lesson:[{p:"`.append()` بتضيف عنصر في آخر القائمة، و`len()` بتقول القائمة فيها كام عنصر."},
+  {code:`bag = ["قلم"]\nbag.append("كشكول")\nprint(bag)\nprint(len(bag))`, out:"['قلم', 'كشكول']\n2"}],
+ quiz:{q:"بعد الكود ده، len(a) كام؟", code:`a = [1, 2]\na.append(5)`, opts:["2","3","5","8"], a:1, why:"كان 2 وضفنا واحد."},
+ task:"ضيف \"عروسة\" وبعدين \"عربية\" بـ append. اطبع عدد اللعب، وبعدين آخر لعبة.", starter:"toys = [\"كورة\"]\n", expected:"3\nعربية",
+ extra:c=> (c.match(/\.append\s*\(/g)||[]).length>=2 ? null : "استخدم append مرتين.", need:[[/len\s*\(/, "استخدم len()"]],
+ hint:"toys.append(\"عروسة\")\n...\nprint(len(toys))\nprint(toys[-1])", solution:`toys = ["كورة"]\ntoys.append("عروسة")\ntoys.append("عربية")\nprint(len(toys))\nprint(toys[-1])`});
+
+play({id:"pl8", w:8, title:"شنطة أدوات البطل",
+ story:"كل بطل محتاج **شنطة أدوات** (Inventory)! هنحط فيها أسلحة ودروع بـ `append`، ونشيل حاجة بـ `remove`، ونعد الحاجات بـ `len`.",
+ code:`bag = []\nbag.append("سيف ⚔️")\nbag.append("درع 🛡️")\nbag.append("جرعة سحرية 🧪")\nprint("🎒 شنطتك فيها:", bag)\nprint("عدد الحاجات:", len(bag))\n\nbag.remove("درع 🛡️")\nprint("بعد ما الدرع اتكسر:", bag)\n`,
+ ideas:["ضيف 3 أدوات من اختراعك.","اطبع أول أداة في الشنطة بـ bag[0].","خلّي البرنامج يسألك عايز تضيف إيه بـ input."]});
+
+predict({id:"l3", w:8, title:"آخر حاجة في الشنطة", code:`toys = ["كورة", "عروسة", "قطر"]\nprint(toys[-1])\nprint(len(toys))`, opts:["قطر\n3","كورة\n3","قطر\n2","عروسة\n3"], a:0, why:"[-1] آخر عنصر، والقائمة فيها 3."});
+
+learn({id:"l4", w:8, title:"في التلاجة؟",
+ lesson:[{p:"كلمة `in` بتسأل: الحاجة دي موجودة في القائمة؟ وبترد `True` أو `False`."},
+  {code:`bag = ["قلم", "مسطرة"]\nprint("قلم" in bag)\nprint("أستيكة" in bag)`, out:"True\nFalse"}],
+ quiz:{q:"إيه ناتج 3 in [1, 2, 3]؟", opts:["True","False","3","غلطة"], a:0, why:"3 موجودة في القائمة."},
+ task:"اقرا اسم أكلة. لو موجودة في التلاجة اطبع: موجود، غير كده: مش موجود", starter:"fridge = [\"لبن\", \"جبنة\", \"بيض\"]\n", stdin:"جبنة",
+ tests:[{inputs:["جبنة"], expected:"موجود"},{inputs:["عصير"], expected:"مش موجود"},{inputs:["بيض"], expected:"موجود"}],
+ need:[[/\bin\b/, "استخدم in"]], hint:"item = input()\nif item in fridge:", solution:`fridge = ["لبن", "جبنة", "بيض"]\nitem = input()\nif item in fridge:\n    print("موجود")\nelse:\n    print("مش موجود")`});
+
+learn({id:"l5", w:8, title:"رتّب الشنطة",
+ lesson:[{p:"`.sort()` بترتب القائمة من الصغير للكبير، و`.remove()` بتشيل عنصر بالاسم."},
+  {code:`n = [5, 1, 4]\nn.sort()\nprint(n)\nn.remove(4)\nprint(n)`, out:"[1, 4, 5]\n[1, 5]"}],
+ quiz:{q:"بعد sort، القائمة [3, 1, 2] تبقى إيه؟", opts:["[1, 2, 3]","[3, 2, 1]","[3, 1, 2]","[1, 3, 2]"], a:0, why:"sort بترتب من الصغير للكبير."},
+ task:"رتّب الدرجات واطبع القائمة، وبعدين اطبع أكبر درجة.", starter:"scores = [7, 3, 9, 1]\n", expected:"[1, 3, 7, 9]\n9",
+ need:[[/\.sort\s*\(/, "استخدم .sort()"]], hint:"scores.sort()\nprint(scores)\nprint(scores[-1])", solution:`scores = [7, 3, 9, 1]\nscores.sort()\nprint(scores)\nprint(scores[-1])`});
+
+fix({id:"l6", w:8, title:"الخانة الوهمية", story:"سمسم عايز يطبع آخر لون، بس بايثون بيقول IndexError: الخانة دي مش موجودة!",
+ task:"صلّح الكود علشان يطبع آخر لون في القائمة.", expected:"أخضر", starter:`colors = ["أحمر", "أزرق", "أخضر"]\nprint(colors[3])\n`,
+ avoid:[[/print\s*\(\s*["']/, "اطبع من القائمة نفسها"]], hint:"العد بيبدأ من 0، يعني آخر خانة رقمها 2، أو استخدم [-1].", solution:`colors = ["أحمر", "أزرق", "أخضر"]\nprint(colors[-1])`});
+
+quest({id:"qf", w:8, title:"قائمة أكلاتي",
+ lesson:[{p:"`.pop()` بتشيل **آخر** عنصر من القائمة. ومع `while True` نقدر نخلي المستخدم يضيف حاجات لحد ما يقول «خلاص»."},
+  {code:`food = ["فول", "طعمية"]\nfood.pop()\nprint(food)`, out:"['فول']"}],
+ quiz:{q:"إيه اللي هيتطبع؟", code:`a = [1, 2, 3]\na.pop()\nprint(a)`, opts:["[1, 2]","[2, 3]","[1, 2, 3]","3"], a:0, why:"pop شالت آخر عنصر (3)."},
+ task:"خلّي الطفل يضيف أكلاته المفضلة للقائمة: اقرا أكلات لحد ما يكتب خلاص. لو كتب حذف شيل آخر أكلة. غير كده ضيف الأكلة. وفي الآخر اطبع القائمة.",
+ starter:"foods = []\nwhile True:\n    item = input()\n", stdin:"بيتزا\nكشري\nحذف\nمكرونة\nخلاص",
+ tests:[{inputs:["بيتزا","كشري","حذف","مكرونة","خلاص"], expected:"['بيتزا', 'مكرونة']"},{inputs:["فول","خلاص"], expected:"['فول']"},{inputs:["خلاص"], expected:"[]"}],
+ need:[[/\.pop\s*\(/, "استخدم .pop() للحذف"],[/\.append\s*\(/, "استخدم .append() للإضافة"],[/\bbreak\b/, "استخدم break لما يكتب خلاص"]],
+ hint:"    if item == \"خلاص\":\n        break\n    elif item == \"حذف\":\n        foods.pop()\n    else:\n        foods.append(item)\nprint(foods)",
+ solution:`foods = []\nwhile True:\n    item = input()\n    if item == "خلاص":\n        break\n    elif item == "حذف":\n        foods.pop()\n    else:\n        foods.append(item)\nprint(foods)`});
+
+/* ---------- الحصة 9: الآلات السحرية ---------- */
+learn({id:"d1", w:9, title:"اعمل زرارك السحري",
+ lesson:[{p:"الدالة زي **زرار** بتدوس عليه علشان ينفّذ أوامر جاهزة إنت اللي صنعتها، بدل ما تكرر الكود. بنعملها بـ `def`، و`return` بترجّع النتيجة."},
+  {code:`def triple(n):\n    return n * 3\n\nprint(triple(4))\nprint(triple(10))`, out:"12\n30"},
+  {tip:"في التحديات دي اكتب الدالة بس، وسمسم هيجربها بأرقام مختلفة."}],
+ quiz:{q:"إيه الكلمة اللي بترجّع النتيجة من الدالة؟", opts:["print","return","def","back"], a:1, why:"return بترجّع القيمة."},
+ task:"اكتب دالة double بتاخد رقم n وترجّع ضعفه.", starter:"def double(n):\n    return 0  # غيّر السطر ده\n",
+ tests:[{call:"print(double(4))\nprint(double(0))\nprint(double(-3))", expected:"8\n0\n-6", show:"double(4), double(0), double(-3)"}],
+ need:[[/def\s+double\s*\(/, "سمّي الدالة double"],[/return/, "استخدم return"]], hint:"return n * 2", solution:`def double(n):\n    return n * 2`});
+
+play({id:"pl9", w:9, title:"قوة ضربة البطل",
+ story:"هنصمم **آلتين سحريتين**: `say_hello(name)` بتسلّم على أي بطل، و`calculate_damage(power, level)` بتحسب قوة الضربة. القيم اللي جوه القوسين اسمها **parameters**.",
+ code:`def say_hello(name):\n    print("أهلاً يا " + name + " 👋")\n\ndef calculate_damage(power, level):\n    return power * level\n\nsay_hello("نينجا")\nsay_hello("سمسم")\n\ndamage = calculate_damage(15, 3)\nprint("💥 قوة الضربة:", damage)\n`,
+ ideas:["سلّم على 3 أبطال من الفصل.","خلّي الضربة تزيد 10 لو level أكبر من 5.","اعمل دالة heal بتزوّد الصحة."]});
+
+learn({id:"d5", w:9, title:"دالة بقيمتين",
+ lesson:[{p:"الدالة ممكن تاخد أكتر من قيمة، بنفصل بينهم بفاصلة."},
+  {code:`def add(a, b):\n    return a + b\n\nprint(add(2, 3))`, out:"5"}],
+ quiz:{q:"إيه ناتج power(2, 3)؟", code:`def power(a, b):\n    return a ** b`, opts:["6","8","9","5"], a:1, why:"2 ** 3 = 8"},
+ task:"اكتب دالة area بتاخد العرض w والطول h وترجّع المساحة.", starter:"def area(w, h):\n    return 0\n",
+ tests:[{call:"print(area(3, 4))\nprint(area(5, 1))\nprint(area(0, 9))", expected:"12\n5\n0", show:"area(3, 4), area(5, 1), area(0, 9)"}],
+ need:[[/def\s+area\s*\(/, "سمّي الدالة area"]], hint:"return w * h", solution:`def area(w, h):\n    return w * h`});
+
+learn({id:"d2", w:9, title:"دالة بتقرر",
+ lesson:[{p:"الدالة ممكن جواها `if` وترجّع `True` أو `False`."},
+  {code:`def is_big(n):\n    if n > 100:\n        return True\n    return False\n\nprint(is_big(500))`, out:"True"}],
+ quiz:{q:"الدالة هترجّع إيه لو n = 7؟", code:`def f(n):\n    if n > 5:\n        return "كبير"\n    return "صغير"`, opts:["كبير","صغير","7","None"], a:0, why:"7 أكبر من 5."},
+ task:"اكتب دالة is_even ترجّع True لو الرقم زوجي و False لو فردي.", starter:"def is_even(n):\n    # اكتب هنا\n    return False\n",
+ tests:[{call:"print(is_even(4))\nprint(is_even(7))\nprint(is_even(0))\nprint(is_even(13))", expected:"True\nFalse\nTrue\nFalse", show:"is_even(4), is_even(7), is_even(0), is_even(13)"}],
+ need:[[/def\s+is_even\s*\(/, "سمّي الدالة is_even"],[/%/, "استخدم %"]], hint:"if n % 2 == 0:\n    return True\nreturn False", solution:`def is_even(n):\n    if n % 2 == 0:\n        return True\n    return False`});
+
+predict({id:"d4", w:9, title:"تعويذة الدالة", code:`def magic(x):\n    return x + 2\n\nprint(magic(3) * 2)`, opts:["10","8","7","5"], a:0, why:"magic(3) = 5، وبعدين 5 × 2 = 10."});
+
+learn({id:"d6", w:9, title:"دالة الترحيب",
+ lesson:[{p:"الدالة ممكن ترجّع نص كمان، ونستخدم f-string جواها."},
+  {code:`def shout(word):\n    return word.upper() + "!"\n\nprint(shout("yay"))`, out:"YAY!"}],
+ quiz:{q:"x هتبقى شايلة إيه؟", code:`def hi(n):\n    return f"هاي {n}"\n\nx = hi("نور")`, opts:["x = هاي نور","هاي نور","هاي n","None"], a:1, why:"x بقت شايلة النص هاي نور."},
+ task:"اكتب دالة say_hello بتاخد اسم وترجّع: أهلاً يا + الاسم + !", starter:"def say_hello(name):\n    return \"\"\n",
+ tests:[{call:"print(say_hello(\"سارة\"))\nprint(say_hello(\"آدم\"))", expected:"أهلاً يا سارة!\nأهلاً يا آدم!", show:"say_hello(\"سارة\"), say_hello(\"آدم\")"}],
+ need:[[/def\s+say_hello\s*\(/, "سمّي الدالة say_hello"],[/return/, "استخدم return"]], hint:"return f\"أهلاً يا {name}!\"", solution:`def say_hello(name):\n    return f"أهلاً يا {name}!"`});
+
+fix({id:"d7", w:9, title:"الدالة الخرسا", story:"الدالة دي بتطبع الناتج بدل ما ترجّعه، فلما سمسم يستخدمها بيلاقي كلمة None غريبة!",
+ task:"صلّح الدالة add علشان ترجّع المجموع بدل ما تطبعه.", starter:`def add(a, b):\n    print(a + b)\n`,
+ tests:[{call:"print(add(2, 3))\nprint(add(10, 5))", expected:"5\n15", show:"add(2, 3), add(10, 5)"}],
+ need:[[/return/, "استخدم return"]], hint:"بدّل print(a + b) بـ return a + b", solution:`def add(a, b):\n    return a + b`});
+
+learn({id:"d3", w:9, title:"دوّر على الأكبر",
+ lesson:[{p:"دالة تلف على قائمة: نفترض أول عنصر هو الأكبر، ونقارنه بالباقيين واحد واحد."},
+  {code:`def smallest(nums):\n    best = nums[0]\n    for n in nums:\n        if n < best:\n            best = n\n    return best\n\nprint(smallest([5, 2, 9]))`, out:"2"}],
+ quiz:{q:"ليه بنبدأ بـ best = nums[0] مش 0؟", opts:["مش فارقة","علشان لو كل الأرقام سالبة، 0 هيبقى غلط","علشان 0 مش رقم","علشان القائمة فاضية"], a:1, why:"لو القائمة [-5, -1]، الصفر أكبر منهم ومش فيها أصلاً."},
+ task:"اكتب دالة biggest ترجّع أكبر رقم في القائمة (من غير max).", starter:"def biggest(nums):\n    best = nums[0]\n    # كمّل هنا\n    return best\n",
+ tests:[{call:"print(biggest([3, 9, 2]))\nprint(biggest([-5, -1, -8]))\nprint(biggest([7]))", expected:"9\n-1\n7", show:"biggest([3, 9, 2]), biggest([-5, -1, -8]), biggest([7])"}],
+ need:[[/def\s+biggest\s*\(/, "سمّي الدالة biggest"],[/\bfor\b/, "استخدم for"]], avoid:[[/max\s*\(/, "اعملها من غير max()"]],
+ hint:"for n in nums:\n    if n > best:\n        best = n", solution:`def biggest(nums):\n    best = nums[0]\n    for n in nums:\n        if n > best:\n            best = n\n    return best`});
+
+quest({id:"qk", w:9, title:"آلة الحساب المزدوجة",
+ lesson:[{p:"الدالة ممكن تطبع أكتر من حاجة جواها، وكل ما نناديها بتعمل كل الأوامر دي من الأول."},
+  {code:`def info(x):\n    print(x)\n    print(x * 10)\n\ninfo(2)`, out:"2\n20"},
+  {tip:"`pass` معناها «ولا حاجة». بنحطها مكان الكود اللي لسه هنكتبه علشان بايثون ميزعلش."}],
+ quiz:{q:"لو نادينا info(1) ثم info(5)، هيتطبع كام سطر؟", opts:["2","4","1","10"], a:1, why:"كل نداء بيطبع سطرين، يعني 4."},
+ task:"اعمل دالة calc بتاخد رقمين a و b، وتطبع مجموعهم في سطر، وحاصل ضربهم في سطر.", starter:"def calc(a, b):\n    pass  # امسح السطر ده واكتب مكانه\n",
+ tests:[{call:"calc(2, 3)\ncalc(4, 5)", expected:"5\n6\n9\n20", show:"calc(2, 3), calc(4, 5)"}],
+ need:[[/def\s+calc\s*\(/, "سمّي الدالة calc"]], hint:"    print(a + b)\n    print(a * b)", solution:`def calc(a, b):\n    print(a + b)\n    print(a * b)`});
+
+/* ---------- إضافي: القواميس ---------- */
+learn({id:"q1", w:10, title:"دفتر الأسامي",
+ lesson:[{p:"القاموس (dict) بيربط **مفتاح** بـ**قيمة** جوه `{ }`. بنجيب القيمة بالمفتاح."},
+  {code:`pet = {"name": "بسبوس", "age": 3}\nprint(pet["name"])\npet["color"] = "أبيض"\nprint(len(pet))`, out:"بسبوس\n3"}],
+ quiz:{q:"إيه اللي هيتطبع؟", code:`phone = {"علي": 123, "منى": 456}\nprint(phone["منى"])`, opts:["123","456","منى","غلطة"], a:1, why:"منى مربوطة بـ 456."},
+ task:"اطبع درجة منى. ضيف \"نور\" بدرجة 88، واطبع عدد الطلاب.", starter:"scores = {\"علي\": 80, \"منى\": 95}\n", expected:"95\n3",
+ need:[[/scores\s*\[\s*["']منى["']\s*\]/, "اطبع scores[\"منى\"]"],[/scores\s*\[\s*["']نور["']\s*\]\s*=/, "ضيف نور بـ scores[\"نور\"] = 88"],[/len\s*\(/, "استخدم len()"]],
+ hint:"print(scores[\"منى\"])\nscores[\"نور\"] = 88\nprint(len(scores))", solution:`scores = {"علي": 80, "منى": 95}\nprint(scores["منى"])\nscores["نور"] = 88\nprint(len(scores))`});
+
+learn({id:"q2", w:10, title:"قائمة الكانتين",
+ lesson:[{p:"`.items()` بتدينا كل مفتاح مع قيمته، فنلف عليهم بـ `for` بمتغيرين."},
+  {code:`ages = {"سارة": 8, "آدم": 10}\nfor name, age in ages.items():\n    print(f"{name} عنده {age}")`, out:"سارة عنده 8\nآدم عنده 10"}],
+ quiz:{q:"for k in d: — k هيبقى إيه؟", opts:["القيم","المفاتيح","المفتاح والقيمة","رقم الخانة"], a:1, why:"اللف على القاموس بيدينا المفاتيح."},
+ task:"اطبع كل صنف وسعره بالشكل ده: عصير = 10", starter:"prices = {\"عصير\": 10, \"شيبسي\": 5, \"بسكوت\": 7}\n", expected:"عصير = 10\nشيبسي = 5\nبسكوت = 7", anyOrder:true,
+ need:[[/\bfor\b/, "استخدم for"]], hint:"for item, price in prices.items():\n    print(f\"{item} = {price}\")", solution:`prices = {"عصير": 10, "شيبسي": 5, "بسكوت": 7}\nfor item, price in prices.items():\n    print(f"{item} = {price}")`});
+
+predict({id:"q3", w:10, title:"الخزنة اتغيرت", code:`d = {"أ": 1, "ب": 2}\nd["أ"] = 5\nprint(d["أ"] + d["ب"])`, opts:["7","3","6","12"], a:0, why:"أ بقت 5، و 5 + 2 = 7."});
+
+learn({id:"q4", w:10, title:"صندوق الأصوات",
+ lesson:[{p:"القاموس ممتاز للعد! لو المفتاح موجود نزوّده، ولو مش موجود نبدأه بـ 1."},
+  {code:`count = {}\nfor f in ["تفاح", "موز", "تفاح"]:\n    if f in count:\n        count[f] += 1\n    else:\n        count[f] = 1\nprint(count["تفاح"])`, out:"2"}],
+ quiz:{q:"إيه ناتج \"قطة\" in {\"قطة\": 3}؟", opts:["True","False","3","قطة"], a:0, why:"in مع القاموس بتدوّر في المفاتيح."},
+ task:"الفصل صوّت على حيوان الفصل. عدّ الأصوات في القاموس count، واطبع أصوات القطة وبعدين أصوات الكلب.",
+ starter:"votes = [\"قطة\", \"كلب\", \"قطة\", \"أرنب\", \"قطة\"]\ncount = {}\n", expected:"3\n1",
+ need:[[/\bfor\b/, "استخدم for"]], avoid:[[/print\s*\(\s*\d/, "خلي البرنامج يعد بنفسه"]],
+ hint:"for v in votes:\n    if v in count:\n        count[v] += 1\n    else:\n        count[v] = 1",
+ solution:`votes = ["قطة", "كلب", "قطة", "أرنب", "قطة"]\ncount = {}\nfor v in votes:\n    if v in count:\n        count[v] += 1\n    else:\n        count[v] = 1\nprint(count["قطة"])\nprint(count["كلب"])`});
+
+learn({id:"q5", w:10, title:"المترجم الصغير",
+ lesson:[{p:"نقدر نستخدم القاموس كمترجم: الكلمة الإنجليزي مفتاح، والعربي قيمة."},
+  {code:`colors = {"red": "أحمر", "blue": "أزرق"}\nprint(colors["blue"])`, out:"أزرق"}],
+ quiz:{q:"إيه اللي هيحصل؟", code:`d = {"a": 1}\nprint(d["b"])`, opts:["هيطبع 0","هيطبع None","غلطة KeyError","هيطبع b"], a:2, why:"المفتاح b مش موجود، فبايثون بيزعل بـ KeyError."},
+ task:"اقرا كلمة إنجليزي. لو موجودة في القاموس اطبع ترجمتها، غير كده اطبع: مش عارفها",
+ starter:"words = {\"cat\": \"قطة\", \"dog\": \"كلب\", \"sun\": \"شمس\"}\n", stdin:"cat",
+ tests:[{inputs:["cat"], expected:"قطة"},{inputs:["sun"], expected:"شمس"},{inputs:["car"], expected:"مش عارفها"}],
+ need:[[/\bin\b/, "استخدم in علشان تتأكد إن الكلمة موجودة"]],
+ hint:"w = input()\nif w in words:\n    print(words[w])\nelse:\n    print(\"مش عارفها\")", solution:`words = {"cat": "قطة", "dog": "كلب", "sun": "شمس"}\nw = input()\nif w in words:\n    print(words[w])\nelse:\n    print("مش عارفها")`});
+
+/* ---------- الحصة 10 و 11: مشروع التخرج ---------- */
+learn({id:"b1", w:11, title:"سلطة الفواكه",
+ lesson:[{p:"تسخين قبل المشروع الكبير! هتجمع `for` و `if` و `elif` و `%` في برنامج واحد."},
+  {tip:"رتّب الشروط صح: الشرط الأصعب (القسمة على 3 **و** 5) لازم ييجي الأول."}],
+ quiz:{q:"15 % 3 و 15 % 5 قيمتهم كام؟", opts:["0 و 0","5 و 3","1 و 1","3 و 5"], a:0, why:"15 بتقبل القسمة على الاتنين."},
+ task:"من 1 لـ 15: لو الرقم بيقبل القسمة على 3 و 5 اطبع: سلطة فواكه — على 3 بس: بطيخ — على 5 بس: مانجا — غير كده اطبع الرقم.",
+ starter:"", expected:"1\n2\nبطيخ\n4\nمانجا\nبطيخ\n7\n8\nبطيخ\nمانجا\n11\nبطيخ\n13\n14\nسلطة فواكه",
+ need:[[/\bfor\b/, "استخدم for"],[/\belif\b/, "استخدم elif"]], hint:"for n in range(1, 16):\n    if n % 3 == 0 and n % 5 == 0:\n        ...",
+ solution:`for n in range(1, 16):\n    if n % 3 == 0 and n % 5 == 0:\n        print("سلطة فواكه")\n    elif n % 3 == 0:\n        print("بطيخ")\n    elif n % 5 == 0:\n        print("مانجا")\n    else:\n        print(n)`});
+
+learn({id:"b2", w:11, title:"مين نجح؟",
+ lesson:[{p:"دالة + قائمة + حلقة + شرط + عدّاد. يلا يا بطل!"},
+  {tip:"اعمل عدّاد يبدأ من 0، وزوّده 1 كل ما تلاقي درجة 50 أو أكتر."}],
+ quiz:{q:"عدّاد بدأ من 0 وزاد 1 في 3 لفات. قيمته كام؟", opts:["0","1","3","4"], a:2, why:"0 + 1 + 1 + 1 = 3"},
+ task:"اكتب دالة count_pass ترجّع عدد الدرجات اللي 50 أو أكتر.", starter:"def count_pass(grades):\n    count = 0\n    # كمّل هنا\n    return count\n",
+ tests:[{call:"print(count_pass([40, 75, 50, 90]))\nprint(count_pass([10, 20]))\nprint(count_pass([]))\nprint(count_pass([100, 100]))", expected:"3\n0\n0\n2", show:"count_pass([40, 75, 50, 90]), count_pass([10, 20]), count_pass([]), count_pass([100, 100])"}],
+ need:[[/def\s+count_pass\s*\(/, "سمّي الدالة count_pass"],[/\bfor\b/, "استخدم for"]],
+ hint:"for g in grades:\n    if g >= 50:\n        count += 1", solution:`def count_pass(grades):\n    count = 0\n    for g in grades:\n        if g >= 50:\n            count += 1\n    return count`});
+
+learn({id:"b3", w:11, title:"حارس الباسورد",
+ lesson:[{p:"الباسورد القوي لازم يكون طويل وفيه رقم. هنلف على حروفه ونشوف فيه رقم ولا لأ."},
+  {code:`has_a = False\nfor ch in "banana":\n    if ch == "a":\n        has_a = True\nprint(has_a)`, out:"True"}],
+ quiz:{q:"إيه ناتج \"5\" in \"0123456789\"؟", opts:["True","False","5","غلطة"], a:0, why:"in مع النصوص بتدوّر جوه النص."},
+ task:"اكتب دالة strong ترجّع True لو الباسورد 8 حروف أو أكتر **وفيه** رقم واحد على الأقل، غير كده False.",
+ starter:"def strong(pw):\n    has_digit = False\n    # كمّل هنا\n    return False\n",
+ tests:[{call:"print(strong(\"abc1\"))\nprint(strong(\"abcdefgh\"))\nprint(strong(\"abcdefg1\"))\nprint(strong(\"12345678\"))", expected:"False\nFalse\nTrue\nTrue", show:"strong(\"abc1\"), strong(\"abcdefgh\"), strong(\"abcdefg1\"), strong(\"12345678\")"}],
+ need:[[/def\s+strong\s*\(/, "سمّي الدالة strong"],[/len\s*\(/, "استخدم len()"]],
+ hint:"for ch in pw:\n    if ch in \"0123456789\":\n        has_digit = True\nreturn len(pw) >= 8 and has_digit",
+ solution:`def strong(pw):\n    has_digit = False\n    for ch in pw:\n        if ch in "0123456789":\n            has_digit = True\n    return len(pw) >= 8 and has_digit`});
+
+learn({id:"b4", w:11, title:"مرآة الكلمات",
+ lesson:[{p:"هنقلب الكلمة: نلف على الحروف، وكل حرف نحطه **قدام** الكلمة الجديدة."},
+  {code:`result = ""\nfor ch in "ab":\n    result = ch + result\nprint(result)`, out:"ba"}],
+ quiz:{q:"result = \"x\" + \"yz\" — قيمته إيه؟", opts:["xyz","yzx","x yz","zyx"], a:0, why:"الجمع بيلزق النصوص بالترتيب."},
+ task:"اكتب دالة reverse ترجّع الكلمة مقلوبة.", starter:"def reverse(word):\n    result = \"\"\n    # كمّل هنا\n    return result\n",
+ tests:[{call:"print(reverse(\"abc\"))\nprint(reverse(\"سمسم\"))\nprint(reverse(\"python\"))", expected:"cba\nمسمس\nnohtyp", show:"reverse(\"abc\"), reverse(\"سمسم\"), reverse(\"python\")"}],
+ need:[[/def\s+reverse\s*\(/, "سمّي الدالة reverse"]], hint:"for ch in word:\n    result = ch + result", solution:`def reverse(word):\n    result = ""\n    for ch in word:\n        result = ch + result\n    return result`});
+
+learn({id:"h1", w:11, title:"المشنوق ١: الحروف المستخبية",
+ lesson:[{p:"**الحصة 10: هيكل اللعبة.** في لعبة المشنوق بنعرض الحروف اللي اتخمنت، ونحط `_` مكان الباقي. هنلف على حروف الكلمة ونسأل: الحرف ده في قائمة التخمينات؟"},
+  {code:`result = ""\nfor ch in "hi":\n    result += ch + " "\nprint(result.strip() + "|")`, out:"h i|"},
+  {tip:"`.strip()` بتشيل المسافات الزيادة من أول وآخر النص."}],
+ quiz:{q:"إيه ناتج \"x\" in [\"a\", \"x\"]؟", opts:["True","False","x","1"], a:0, why:"x موجودة في القائمة."},
+ task:"اكتب دالة show_word(word, guessed) ترجّع الكلمة بالحروف اللي اتخمنت بس، و _ مكان الباقي، وبين كل حرف مسافة.",
+ starter:"def show_word(word, guessed):\n    result = \"\"\n    for ch in word:\n        result += \"_ \"  # غيّر هنا: لو ch في guessed حط الحرف\n    return result.strip()\n",
+ tests:[{call:"print(show_word(\"cat\", [\"a\"]))\nprint(show_word(\"dog\", []))\nprint(show_word(\"hi\", [\"h\", \"i\"]))\nprint(show_word(\"book\", [\"o\"]))", expected:"_ a _\n_ _ _\nh i\n_ o o _", show:"show_word(\"cat\", [\"a\"]), show_word(\"dog\", []), show_word(\"hi\", [\"h\", \"i\"]), show_word(\"book\", [\"o\"])"}],
+ need:[[/def\s+show_word\s*\(/, "سمّي الدالة show_word"],[/\bin\s+guessed\b/, "اسأل: ch in guessed"]],
+ hint:"        if ch in guessed:\n            result += ch + \" \"\n        else:\n            result += \"_ \"",
+ solution:`def show_word(word, guessed):\n    result = ""\n    for ch in word:\n        if ch in guessed:\n            result += ch + " "\n        else:\n            result += "_ "\n    return result.strip()`});
+
+quest({id:"h2", w:11, title:"المشنوق ٢: الأرواح والفوز",
+ lesson:[{p:"**الحصة 11: الشروط والنقاط والخسارة والفوز.** عندنا `lives` (أرواح). كل تخمين غلط ينقّص روح. ولو مفيش `_` في الكلمة يبقى كسبنا! `not in` بتسأل: مش موجود؟"},
+  {code:`lives = 3\nlives -= 1\nprint(lives)\nprint("_" not in "c a t")`, out:"2\nTrue"}],
+ quiz:{q:"إيه ناتج \"z\" not in \"cat\"؟", opts:["True","False"], a:0, why:"z مش موجودة في cat، فالإجابة True."},
+ task:"كمّل لعبة المشنوق: (1) لو الحرف في الكلمة اطبع: صح! — غير كده نقّص lives واطبع: غلط! فاضل + lives. (2) بعد ما الكلمة تتطبع: لو مفيش _ اطبع: كسبت! واخرج — ولو lives بقت 0 اطبع: خسرت! الكلمة كانت cat واخرج.",
+ starter:`word = "cat"\nguessed = []\nlives = 3\n\ndef show_word(word, guessed):\n    result = ""\n    for ch in word:\n        if ch in guessed:\n            result += ch + " "\n        else:\n            result += "_ "\n    return result.strip()\n\nwhile True:\n    letter = input()\n    guessed.append(letter)\n    # (1) صح ولا غلط؟\n\n    print(show_word(word, guessed))\n    # (2) كسب ولا خسر؟\n\n`,
+ stdin:"c\nx\na\nt",
+ tests:[{inputs:["c","x","a","t"], expected:"صح!\nc _ _\nغلط! فاضل 2\nc _ _\nصح!\nc a _\nصح!\nc a t\nكسبت!"},{inputs:["x","y","z"], expected:"غلط! فاضل 2\n_ _ _\nغلط! فاضل 1\n_ _ _\nغلط! فاضل 0\n_ _ _\nخسرت! الكلمة كانت cat"}],
+ need:[[/lives\s*-=\s*1|lives\s*=\s*lives\s*-\s*1/, "نقّص lives بـ lives -= 1"],[/\bbreak\b/, "استخدم break لما اللعبة تخلص"]],
+ hint:"    if letter in word:\n        print(\"صح!\")\n    else:\n        lives -= 1\n        print(f\"غلط! فاضل {lives}\")\n...\n    if \"_\" not in show_word(word, guessed):\n        print(\"كسبت!\")\n        break\n    if lives == 0:\n        print(\"خسرت! الكلمة كانت \" + word)\n        break",
+ solution:`word = "cat"\nguessed = []\nlives = 3\n\ndef show_word(word, guessed):\n    result = ""\n    for ch in word:\n        if ch in guessed:\n            result += ch + " "\n        else:\n            result += "_ "\n    return result.strip()\n\nwhile True:\n    letter = input()\n    guessed.append(letter)\n    if letter in word:\n        print("صح!")\n    else:\n        lives -= 1\n        print(f"غلط! فاضل {lives}")\n    print(show_word(word, guessed))\n    if "_" not in show_word(word, guessed):\n        print("كسبت!")\n        break\n    if lives == 0:\n        print("خسرت! الكلمة كانت " + word)\n        break`});
+
+play({id:"plh", w:11, title:"العب المشنوق كاملة!",
+ story:"دي **اللعبة الكاملة** اللي بنيتها، بكلمة عشوائية من قائمة و5 أرواح ❤️. العبها، وبعدين عدّل عليها وضيف أفكارك: كلمات جديدة، أو تلميح، أو نقاط!",
+ code:`import random\n\nwords = ["cat", "sun", "fish", "star", "cake"]\nword = random.choice(words)\nguessed = []\nlives = 5\n\ndef show_word(word, guessed):\n    result = ""\n    for ch in word:\n        if ch in guessed:\n            result += ch + " "\n        else:\n            result += "_ "\n    return result.strip()\n\nprint("🎮 لعبة المشنوق! الكلمة فيها", len(word), "حروف")\nwhile True:\n    print(show_word(word, guessed), "  ", "❤️" * lives)\n    letter = input("خمّن حرف: ")\n    guessed.append(letter)\n    if letter not in word:\n        lives -= 1\n        print("غلط! 😬")\n    if "_" not in show_word(word, guessed):\n        print("🎉 كسبت! الكلمة كانت", word)\n        break\n    if lives == 0:\n        print("💀 خسرت! الكلمة كانت", word)\n        break\n`,
+ ideas:["ضيف كلمات جديدة للقائمة.","اعمل score بيزيد 10 لكل حرف صح.","ده المشروع اللي هتعرضه يوم التخرج، فخليه بأفكارك!"], stdin:["a","e","i","o","u","s","t","c","f","h","k","n","r"]});
+
+quest({id:"adv", w:11, title:"مغامرة المتاهة",
+ lesson:[{p:"مشروع تاني: **لعبة مغامرة بالكلام** (Text Adventure). نقدر نحط `if` جوه `if` علشان القصة تتفرع أكتر. السطور اللي جوه الـ if التانية بتبدأ بـ 8 مسافات."},
+  {code:`door = "أحمر"\nkey = True\nif door == "أحمر":\n    if key:\n        print("فتحت الباب!")`, out:"فتحت الباب!"}],
+ quiz:{q:"السطر اللي جوه if جوه if بيبدأ بكام مسافة؟", opts:["0","4","8","12"], a:2, why:"4 لكل if، يعني 8."},
+ task:"كمّل المغامرة: لو اختار شمال اطبع: قابلت تنين! تحارب ولا تهرب؟ واقرا اختيار تاني. لو كتب تحارب اطبع: التنين نام من الملل. كسبت! — غير كده: هربت بسلام. حاول تاني! — ولو كتب أي حاجة غير يمين وشمال اطبع: تهت في المتاهة!",
+ starter:`print("إنت في متاهة. تروح يمين ولا شمال؟")\nchoice = input()\nif choice == "يمين":\n    print("لقيت صندوق كنز! كسبت!")\n# كمّل هنا بـ elif و else\n`, stdin:"شمال\nتحارب",
+ tests:[{inputs:["يمين"], expected:"إنت في متاهة. تروح يمين ولا شمال؟\nلقيت صندوق كنز! كسبت!"},
+  {inputs:["شمال","تحارب"], expected:"إنت في متاهة. تروح يمين ولا شمال؟\nقابلت تنين! تحارب ولا تهرب؟\nالتنين نام من الملل. كسبت!"},
+  {inputs:["شمال","اهرب"], expected:"إنت في متاهة. تروح يمين ولا شمال؟\nقابلت تنين! تحارب ولا تهرب؟\nهربت بسلام. حاول تاني!"},
+  {inputs:["فوق"], expected:"إنت في متاهة. تروح يمين ولا شمال؟\nتهت في المتاهة!"}],
+ need:[[/\belif\b/, "استخدم elif للشمال"]],
+ hint:"elif choice == \"شمال\":\n    print(\"قابلت تنين! تحارب ولا تهرب؟\")\n    action = input()\n    if action == \"تحارب\":\n        ...\n    else:\n        ...\nelse:\n    print(\"تهت في المتاهة!\")",
+ solution:`print("إنت في متاهة. تروح يمين ولا شمال؟")\nchoice = input()\nif choice == "يمين":\n    print("لقيت صندوق كنز! كسبت!")\nelif choice == "شمال":\n    print("قابلت تنين! تحارب ولا تهرب؟")\n    action = input()\n    if action == "تحارب":\n        print("التنين نام من الملل. كسبت!")\n    else:\n        print("هربت بسلام. حاول تاني!")\nelse:\n    print("تهت في المتاهة!")`});
+
+L.forEach((l,i)=>{ l.n=i; });
+
+const RANKS = [[0,"بيضة صغنونة"],[100,"سمسم الكتكوت"],[350,"صياد الأخطاء"],[750,"ساحر الحلقات"],[1250,"نينجا الدوال"],[1900,"ملك بايثون"]];
+const OUTFITS = [
+  {id:"none", n:"من غير حاجة", xp:0}, {id:"bow", n:"فيونكة", xp:0}, {id:"flower", n:"وردة", xp:120},
+  {id:"glasses", n:"نضارة العباقرة", xp:300}, {id:"party", n:"طرطور الحفلة", xp:550}, {id:"headphones", n:"سماعات", xp:850},
+  {id:"crown", n:"تاج الملوك", xp:1250}, {id:"cap", n:"قبعة التخرج", xp:1700}
+];
+const FACTS = [
+  "اسم بايثون جاي من برنامج كوميدي اسمه Monty Python، مش من الثعبان!",
+  "بايثون اتعمل سنة 1991، والمخترع بتاعه اسمه Guido van Rossum.",
+  "يوتيوب وإنستجرام بيستخدموا بايثون في حاجات كتير.",
+  "المبرمجين بيسموا الغلطة bug يعني حشرة، وتصليحها اسمه debugging.",
+  "أول برنامج بيكتبه أغلب المبرمجين بيطبع Hello, World!",
+  "الكمبيوتر بيعد من 0 علشان كده أول خانة في القائمة رقمها 0.",
+  "العلماء في ناسا بيستخدموا بايثون علشان يحللوا صور الفضاء.",
+  "ممكن تكتب import this في بايثون وتلاقي قصيدة صغيرة عن البرمجة!"
+];
+
+/* ===================== الحالة ===================== */
+const KEY = "samsam-python-v1";
+let S = {done:{}, quiz:{}, code:{}, hint:{}, sol:{}, xp:0, all:false, sound:true, outfit:"bow", chest:"", best:0, combo:0, cm:{}, bh:{}, board:[], name:""};
+try{ const raw = localStorage.getItem(KEY); if(raw) S = Object.assign(S, JSON.parse(raw)); }catch(e){}
+S.cm = S.cm||{}; S.bh = S.bh||{}; S.board = Array.isArray(S.board) ? S.board : [];
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+const app = document.getElementById("app");
+const modalRoot = document.getElementById("modalRoot");
+let running = false, speedTimer = null, liveStop = null;
+
+/* ===================== أدوات ===================== */
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const rich = s => esc(s).replace(/`([^`]+)`/g,'<code class="ic">$1</code>').replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>");
+const shuffle = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.random()*(i+1)|0; [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const today = () => { const d = new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
+
+const KW = new Set("def return if elif else for while in and or not True False None break continue import from as pass is lambda global try except class with".split(" "));
+const BI = new Set("print input len range int str float type list dict sum max min abs round sorted append upper lower items keys values bool replace sort remove pop strip random randint choice".split(" "));
+function hlLine(line){
+  const re = /(#.*$)|([fFrR]?"[^"]*"?|[fFrR]?'[^']*'?)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_][A-Za-z0-9_]*)|([^\s"'#A-Za-z0-9_]+|\s+)/g;
+  let out = "", m, prevDef = false;
+  while((m = re.exec(line))){
+    if(m[0]===""){ re.lastIndex++; continue; }
+    if(m[1]) out += '<span class="tk-c">'+esc(m[1])+'</span>';
+    else if(m[2]) out += '<span class="tk-s">'+esc(m[2])+'</span>';
+    else if(m[3]) out += '<span class="tk-n">'+esc(m[3])+'</span>';
+    else if(m[4]){ const w = m[4];
+      if(prevDef){ out += '<span class="tk-f">'+w+'</span>'; prevDef=false; }
+      else if(KW.has(w)){ out += '<span class="tk-k">'+w+'</span>'; prevDef = (w==="def"); }
+      else if(BI.has(w)) out += '<span class="tk-b">'+w+'</span>';
+      else out += w;
+    } else out += esc(m[0]);
+  }
+  return out;
+}
+const hl = code => code.split("\n").map(hlLine).join("\n");
+
+function mascot(acc){
+  acc = acc || S.outfit;
+  const O = "#5A3E4B";
+  let a = "";
+  if(acc==="bow") a = `<g transform="translate(92 20) rotate(18)"><path d="M0 0 L-16 -9 Q-20 0 -16 9 Z M0 0 L16 -9 Q20 0 16 9 Z" fill="#FF8FB1" stroke="${O}" stroke-width="3" stroke-linejoin="round"/><circle r="5" fill="#FFC2D6" stroke="${O}" stroke-width="3"/></g>`;
+  if(acc==="flower") a = `<g transform="translate(52 22)">${[0,72,144,216,288].map(r=>`<ellipse rx="6" ry="9" transform="rotate(${r}) translate(0 -8)" fill="#FFF" stroke="${O}" stroke-width="2.5"/>`).join("")}<circle r="5.5" fill="#FFD95E" stroke="${O}" stroke-width="2.5"/></g>`;
+  if(acc==="glasses") a = `<g fill="rgba(255,255,255,.25)" stroke="${O}" stroke-width="3.2"><circle cx="63" cy="47" r="11"/><circle cx="87" cy="47" r="11"/><path d="M74 46 q1 -3 2 0" fill="none"/><path d="M52 45 l-8 -3 M98 45 l8 -3" fill="none"/></g>`;
+  if(acc==="party") a = `<g transform="translate(70 0) rotate(-14)"><path d="M0 0 L14 26 L-14 26 Z" fill="#8FD3FF" stroke="${O}" stroke-width="3" stroke-linejoin="round"/><path d="M-7 13 L7 13 M-10 20 L10 20" stroke="#FFF" stroke-width="3"/><circle cy="-2" r="5" fill="#FF8FB1" stroke="${O}" stroke-width="2.5"/></g>`;
+  if(acc==="headphones") a = `<g stroke="${O}" stroke-width="3.2"><path d="M46 46 Q46 14 75 14 Q104 14 104 46" fill="none" stroke-width="5"/><rect x="38" y="38" width="13" height="20" rx="6" fill="#C9B6FF"/><rect x="99" y="38" width="13" height="20" rx="6" fill="#C9B6FF"/></g>`;
+  if(acc==="crown") a = `<path d="M56 24 L58 6 L67 16 L75 2 L83 16 L92 6 L94 24 Z" fill="#FFD95E" stroke="${O}" stroke-width="3" stroke-linejoin="round"/><circle cx="75" cy="17" r="3" fill="#FF8FB1"/>`;
+  if(acc==="cap") a = `<g><path d="M50 16 L75 6 L100 16 L75 26 Z" fill="${O}"/><path d="M62 21 v8 q13 6 26 0 v-8" fill="${O}"/><path d="M98 17 v12" stroke="#FFD95E" stroke-width="3" stroke-linecap="round"/><circle cx="98" cy="30" r="3" fill="#FFD95E"/></g>`;
+  return `<svg class="m" viewBox="0 0 140 140" aria-hidden="true">
+    <path d="M24 122 C 4 108, 22 88, 52 94 S 106 110, 114 88 S 98 66, 80 62" fill="none" stroke="${O}" stroke-width="27" stroke-linecap="round"/>
+    <path d="M24 122 C 4 108, 22 88, 52 94 S 106 110, 114 88 S 98 66, 80 62" fill="none" stroke="#8FE3BE" stroke-width="20" stroke-linecap="round"/>
+    <circle cx="38" cy="100" r="3.6" fill="#FFC2D6"/><circle cx="62" cy="98" r="3.6" fill="#FFC2D6"/><circle cx="88" cy="103" r="3.6" fill="#FFC2D6"/><circle cx="108" cy="90" r="3.6" fill="#FFC2D6"/>
+    <circle cx="75" cy="48" r="31" fill="#8FE3BE" stroke="${O}" stroke-width="3.5"/>
+    <ellipse cx="75" cy="56" rx="20" ry="14" fill="#B4F0D4"/>
+    <ellipse cx="63" cy="47" rx="6.5" ry="8" fill="#3B2A33"/><ellipse cx="87" cy="47" rx="6.5" ry="8" fill="#3B2A33"/>
+    <circle cx="65.4" cy="44" r="2.7" fill="#fff"/><circle cx="61.4" cy="50" r="1.2" fill="#fff"/><circle cx="89.4" cy="44" r="2.7" fill="#fff"/><circle cx="85.4" cy="50" r="1.2" fill="#fff"/>
+    <ellipse cx="53" cy="59" rx="6" ry="3.6" fill="#FF9EB8" opacity=".85"/><ellipse cx="97" cy="59" rx="6" ry="3.6" fill="#FF9EB8" opacity=".85"/>
+    <path d="M70 60 q2.5 3.5 5 0 q2.5 3.5 5 0" fill="none" stroke="${O}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    ${a}
+  </svg>`;
+}
+function say(text, cls){ return `<div class="say ${cls||""}">${mascot()}<div class="txt">${rich(text)}</div></div>`; }
+function starsHTML(n, cls){ let h='<span class="'+(cls||"stars")+'" aria-label="'+n+' نجوم">'; for(let i=0;i<3;i++) h+='<svg viewBox="0 0 24 24" class="'+(i<n?"on":"")+'"><use href="#star" fill="'+(i<n?"#FFD95E":"#F1E4EA")+'" stroke="'+(i<n?"#E0AE22":"#E3CFD8")+'"/></svg>'; return h+'</span>'; }
+
+function norm(s){
+  return String(s).replace(/\r/g,"").replace(/[ً-ْٰـ]/g,"").replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه")
+    .split("\n").map(l=>l.replace(/[ \t]+/g," ").trim()).join("\n").replace(/^\n+|\n+$/g,"");
+}
+function stripComments(code){
+  return code.split("\n").map(line=>{ let q=null;
+    for(let i=0;i<line.length;i++){ const ch=line[i];
+      if(q){ if(ch===q) q=null; } else if(ch==='"'||ch==="'") q=ch; else if(ch==="#") return line.slice(0,i); }
+    return line; }).join("\n");
+}
+function arabicOutside(code){
+  const lines = code.split("\n");
+  for(let i=0;i<lines.length;i++){ let q=null; const line=lines[i];
+    for(let j=0;j<line.length;j++){ const ch=line[j];
+      if(q){ if(ch===q) q=null; continue; }
+      if(ch==='"'||ch==="'"){ q=ch; continue; }
+      if(ch==="#") break;
+      if(/[؀-ۿ]/.test(ch)) return {line:i+1, ch};
+    } }
+  return null;
+}
+function precheck(code){
+  const lines = code.split("\n");
+  for(let i=0;i<lines.length;i++){
+    if(/[“”„]/.test(lines[i])) return {line:i+1, msg:"في السطر "+(i+1)+" علامات تنصيص مايلة “ ”. استخدم العلامة العادية \" من الكيبورد الإنجليزي."};
+    if(/[‘’]/.test(lines[i])) return {line:i+1, msg:"في السطر "+(i+1)+" علامة تنصيص مايلة ‘ ’. استخدم ' أو \" العادية."};
+  }
+  const a = arabicOutside(code);
+  if(a){
+    if(/[،؛]/.test(a.ch)) return {line:a.line, msg:"في السطر "+a.line+" فاصلة عربي « "+a.ch+" ». بايثون بيفهم الفاصلة الإنجليزي , بس."};
+    if(/[٠-٩]/.test(a.ch)) return {line:a.line, msg:"في السطر "+a.line+" أرقام عربي « "+a.ch+" ». اكتب الأرقام بالإنجليزي 0123456789."};
+  }
+  return null;
+}
+
+/* ===================== تشغيل بايثون ===================== */
+function skRead(x){
+  if(typeof Sk.builtinFiles==="undefined" || Sk.builtinFiles.files[x]===undefined) throw "File not found: '"+x+"'";
+  return Sk.builtinFiles.files[x];
+}
+function runPython(code, inputs){
+  let out = "", tooMuch = false; const items = []; let qi = 0;
+  Sk.configure({
+    output: t => { if(out.length > 20000){ tooMuch = true; throw new Sk.builtin.RuntimeError("OUTPUT_LIMIT"); } out += t; items.push({k:"o", t}); },
+    read: skRead, __future__: Sk.python3, inputfunTakesPrompt: true,
+    inputfun: p => { const missing = qi >= inputs.length; const v = missing ? "" : String(inputs[qi]); qi++; items.push({k:"i", p: p==null?"":String(p), v, missing}); return v; },
+    execLimit: 4000, yieldLimit: 100, killableWhile: true, killableFor: true
+  });
+  Sk.execLimit = 4000; Sk.execStart = Date.now();
+  return Sk.misceval.asyncToPromise(() => Sk.importMainWithBody("<stdin>", false, code, true))
+    .then(() => ({out, items, err:null}), e => ({out, items, err:e, tooMuch}));
+}
+function runLive(code, box){
+  box.innerHTML = `<div class="title">شاشة البرنامج</div>`;
+  let line; const newLine = () => { line = document.createElement("div"); line.className = "ln"; box.appendChild(line); };
+  newLine();
+  const write = t => { String(t).split("\n").forEach((p,i)=>{ if(i>0) newLine(); if(p) line.appendChild(document.createTextNode(p)); }); box.scrollTop = box.scrollHeight; };
+  let total = 0, stopped = false, tooMuch = false, pending = null;
+  Sk.configure({
+    output: t => { total += t.length; if(total > 20000){ tooMuch = true; throw new Sk.builtin.RuntimeError("OUTPUT_LIMIT"); } write(t); },
+    read: skRead, __future__: Sk.python3, inputfunTakesPrompt: true,
+    inputfun: p => new Promise((resolve, reject) => {
+      write(p==null ? "" : String(p));
+      const inp = document.createElement("input");
+      inp.className = "live-in"; inp.dir = "auto"; inp.setAttribute("aria-label", "اكتب إجابتك ودوس Enter"); inp.placeholder = "اكتب ودوس Enter";
+      line.appendChild(inp); setTimeout(()=>inp.focus(), 30); box.scrollTop = box.scrollHeight;
+      pending = reject;
+      inp.addEventListener("keydown", e => {
+        if(e.key !== "Enter") return;
+        e.preventDefault();
+        const v = inp.value, s = document.createElement("span"); s.className = "in"; s.textContent = v; inp.replaceWith(s);
+        newLine(); pending = null; Sk.execStart = Date.now(); resolve(v);
+      });
+    }),
+    execLimit: 5000, yieldLimit: 100, killableWhile: true, killableFor: true
+  });
+  Sk.execLimit = 5000; Sk.execStart = Date.now();
+  liveStop = () => { stopped = true; Sk.execLimit = 1; Sk.execStart = 0; if(pending){ const r = pending; pending = null; r(new Error("STOPPED")); } };
+  return Sk.misceval.asyncToPromise(() => Sk.importMainWithBody("<stdin>", false, code, true))
+    .then(() => ({err:null, stopped:false}), e => ({err:e, stopped, tooMuch}))
+    .finally(() => { liveStop = null; box.querySelectorAll(".live-in").forEach(x=>x.disabled = true); });
+}
+function stopLive(){ if(liveStop) liveStop(); }
+
+function errInfo(e, tooMuch){
+  let name = "Error", msg = "", line = null;
+  try{ name = e.tp$name || (e.constructor && e.constructor.name) || "Error"; }catch(_){}
+  try{ msg = e.toString(); }catch(_){ msg = String(e); }
+  try{ if(e.traceback && e.traceback.length) line = e.traceback[0].lineno; }catch(_){}
+  if(!line){ const m = /line (\d+)/.exec(msg); if(m) line = +m[1]; }
+  if(tooMuch || /OUTPUT_LIMIT|TimeLimit|time limit|took too long/i.test(name+" "+msg)) name = "TimeLimitError";
+  if(/indent/i.test(msg) && name==="SyntaxError") name = "IndentationError";
+  return {name, msg, line};
+}
+function friendly(info, code){
+  const ln = info.line ? " في السطر "+info.line : "";
+  const nm = /name '([^']+)'/.exec(info.msg);
+  let t, p;
+  switch(info.name){
+    case "SyntaxError": case "ParseError": case "TokenError":
+      t="فيه غلطة في طريقة الكتابة"+ln; p="بص على الأقواس ( ) إنها مقفولة، وعلامات التنصيص \" \" إنها جوز، والنقطتين : في آخر سطور if و for و while و def."; break;
+    case "IndentationError":
+      t="المسافات اللي في أول السطر مش مظبوطة"+ln; p="السطور اللي جوه if أو for أو while أو def لازم تبدأ بـ 4 مسافات، والسطور اللي برة متبدأش بمسافات."; break;
+    case "NameError":
+      t="بايثون مش عارف مين "+(nm?"« "+nm[1]+" »":"الاسم ده")+ln; p="يمكن نسيت تعمل المتغير ده الأول، أو كتبت اسمه غلط، أو نسيت علامات التنصيص حوالين الكلام."; break;
+    case "TypeError": t="بتخلط أنواع مع بعض"+ln; p="غالباً بتجمع نص على رقم. استخدم int() للتحويل لرقم، أو str() للتحويل لنص."; break;
+    case "ValueError": t="القيمة دي مينفعش تتحول"+ln; p="int() محتاجة رقم بس، زي \"12\". اتأكد إنك كتبت رقم بالإنجليزي."; break;
+    case "IndexError": t="رقم الخانة أكبر من القائمة"+ln; p="العد بيبدأ من 0، وآخر خانة رقمها len - 1، أو استخدم [-1]. ولو القائمة فاضية مينفعش pop."; break;
+    case "KeyError": t="المفتاح ده مش موجود في القاموس"+ln; p="اتأكد إن اسم المفتاح مكتوب بالظبط، أو استخدم in قبلها."; break;
+    case "ZeroDivisionError": t="مينفعش نقسم على صفر"+ln; p="حتى بايثون مايقدرش يعملها!"; break;
+    case "AttributeError": t="الحاجة دي معندهاش الأمر ده"+ln; p="اتأكد من اسم الأمر اللي بعد النقطة، زي .append أو .upper."; break;
+    case "TimeLimitError": t="البرنامج دخل في دوامة مبتخلصش"; p="غالباً عندك حلقة while الشرط بتاعها مبيبقاش غلط أبداً. اتأكد إنك بتغيّر المتغير جوه الحلقة، أو إن فيه break."; break;
+    default: t="البرنامج وقع"+ln; p="اقرا الرسالة التقنية تحت، وراجع السطر ده.";
+  }
+  const a = arabicOutside(code);
+  if(a && info.name!=="TimeLimitError") p += " ملحوظة: فيه حروف عربي برة علامات التنصيص في السطر "+a.line+" — الأوامر وأسامي المتغيرات بتتكتب بالإنجليزي.";
+  return {t, p};
+}
+
+/* ===================== صوت ===================== */
+let actx = null;
+function beep(kind){
+  if(!S.sound) return;
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const notes = kind==="win" ? [784,988,1175,1568] : kind==="ok" ? [880,1320] : kind==="pop" ? [1200] : [330,262];
+    notes.forEach((f,i)=>{
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = kind==="bad" ? "triangle" : "sine"; o.frequency.value = f;
+      const t0 = actx.currentTime + i*0.09;
+      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.14, t0+0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0+0.2);
+      o.connect(g); g.connect(actx.destination); o.start(t0); o.stop(t0+0.22);
+    });
+  }catch(e){}
+}
+const soundBtn = document.getElementById("soundBtn");
+function paintSound(){
+  soundBtn.innerHTML = S.sound
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M17 8.5a5 5 0 0 1 0 7M19.5 6a8.5 8.5 0 0 1 0 12"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+  soundBtn.setAttribute("aria-label", S.sound ? "اكتم الصوت" : "شغّل الصوت");
+}
+soundBtn.onclick = () => { S.sound = !S.sound; save(); paintSound(); if(S.sound) beep("ok"); };
+paintSound();
+
+function confetti(){
+  if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const cv = document.getElementById("confetti"); cv.hidden = false;
+  const ctx = cv.getContext("2d"); const W = cv.width = innerWidth, H = cv.height = innerHeight;
+  const cols = ["#FF8FB1","#FFD95E","#8FE3BE","#8FD3FF","#C9B6FF","#FFB38A"];
+  const P = Array.from({length:150}, ()=>({x:W/2+(Math.random()-.5)*240, y:H*0.38, vx:(Math.random()-.5)*15, vy:-Math.random()*15-5, r:Math.random()*8+7, c:cols[Math.random()*cols.length|0], a:Math.random()*6, s:Math.random()*3|0}));
+  const t0 = performance.now();
+  function heart(r){ ctx.beginPath(); ctx.moveTo(0, r*.3); ctx.bezierCurveTo(-r, -r*.4, -r*.4, -r, 0, -r*.35); ctx.bezierCurveTo(r*.4, -r, r, -r*.4, 0, r*.3); ctx.fill(); }
+  function star(r){ ctx.beginPath(); for(let i=0;i<10;i++){ const rr = i%2 ? r*.45 : r; const an = i*Math.PI/5 - Math.PI/2; ctx.lineTo(Math.cos(an)*rr, Math.sin(an)*rr); } ctx.closePath(); ctx.fill(); }
+  (function f(t){
+    ctx.clearRect(0,0,W,H);
+    P.forEach(p=>{ p.vy+=0.4; p.vx*=0.99; p.x+=p.vx; p.y+=p.vy; p.a+=0.1; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.a); ctx.fillStyle=p.c;
+      if(p.s===0) heart(p.r); else if(p.s===1) star(p.r*.7); else { ctx.beginPath(); ctx.arc(0,0,p.r/2.6,0,7); ctx.fill(); } ctx.restore(); });
+    if(t-t0 < 2800) requestAnimationFrame(f); else { ctx.clearRect(0,0,W,H); cv.hidden = true; }
+  })(t0);
+}
+
+/* ===================== حسابات ===================== */
+function unlocked(i){ return S.all || i===0 || !!S.done[L[i-1].id] || !!S.done[L[i].id]; }
+function totalStars(){ return L.reduce((a,l)=>a+(S.done[l.id]||0),0); }
+function doneCount(){ return L.filter(l=>S.done[l.id]).length; }
+function rank(){ let r = RANKS[0][1]; RANKS.forEach(([x,n])=>{ if(S.xp>=x) r=n; }); return r; }
+function nextUndone(){ const i = L.findIndex(l=>!S.done[l.id]); return i<0 ? L.length-1 : i; }
+function worldDone(wi){ return L.filter(l=>l.w===wi).every(l=>S.done[l.id]); }
+function paintStats(){
+  document.getElementById("xpVal").textContent = S.xp;
+  document.getElementById("starVal").textContent = totalStars();
+  document.getElementById("rankVal").textContent = rank();
+  document.getElementById("brandM").innerHTML = mascot();
+}
+function addXP(n){ S.xp += n; save(); paintStats(); }
+/* XP rules from the curriculum: explain/play +10, challenge +20, +5 when solved alone */
+function levelValue(l, stars){ if(!stars) return 0; if(l.type==="play") return 10; return 20 + (stars===3 ? 5 : 0); }
+
+const BADGES = [
+  {id:"cm", e:"🧠", n:"Code Master", d:"حل 5 تحديات من غير ولا SyntaxError", ok:()=>Object.keys(S.cm).length>=5},
+  {id:"bh", e:"🐞", n:"Bug Hunter", d:"اكتشف الغلطة وصلّحها بنفسك في 3 مستويات تصليح", ok:()=>Object.keys(S.bh).length>=3},
+  {id:"gm", e:"🎮", n:"اللعّيب", d:"شغّل كل برامج «العب»", ok:()=>L.filter(l=>l.type==="play").every(l=>S.done[l.id])},
+  {id:"sp", e:"⚡", n:"البرق", d:"جاوب 10 أسئلة في تحدي السرعة", ok:()=>S.best>=10},
+  {id:"ex", e:"🧭", n:"المستكشف", d:"خلّص المرحلة الأولى كلها", ok:()=>PHASES[0].ws.every(worldDone)},
+  {id:"gr", e:"🎓", n:"Python Game Developer", d:"خلّص الرحلة كلها", ok:()=>doneCount()===L.length}
+];
+const earnedBadges = () => BADGES.filter(b=>b.ok()).map(b=>b.id);
+
+/* ===================== الخريطة ===================== */
+function stopSpeed(){ if(speedTimer){ clearInterval(speedTimer); speedTimer = null; } }
+function leave(){ stopSpeed(); stopLive(); closeModal(); }
+function renderMap(){
+  leave();
+  const dn = doneCount(), pct = Math.round(dn/L.length*100), nu = nextUndone();
+  const chestReady = S.chest !== today();
+  const greet = dn===0 ? "أهلاً! أنا سمسم 💚" : dn===L.length ? "إنت بطل بايثون!" : "يلا نكمّل يا بطل!";
+  let h = `
+  <section class="hero">
+    <div>
+      <h1>مغامرة سمسم في <span class="py">Python</span></h1>
+      <p class="lead">رحلة المبرمج الصغير: 12 حصة في 3 مراحل، و${L.length} مستوى. كل حصة فيها شرح، ولعب، وتحدي بتحله لوحدك وتاخد عليه XP.</p>
+      <div class="flow"><span class="st">📖 اشرح</span><span class="ar">◂</span><span class="st">🎮 العب</span><span class="ar">◂</span><span class="st">🏆 اتدرّب</span></div>
+      <div class="hero-actions">
+        <button class="btn big pink" id="goBtn">${dn ? "كمّل المغامرة" : "يلا نبدأ!"}</button>
+        <button class="btn big" id="playBtn">الملعب الحر</button>
+      </div>
+    </div>
+    <div class="hero-m">${mascot()}<span class="bubble">${greet}</span></div>
+  </section>
+  <div class="progress-row"><strong>${dn} / ${L.length}</strong><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><strong>${pct}%</strong></div>
+  <section class="fun" aria-label="ركن الألعاب">
+    <button class="tile ${chestReady?"ready":""}" id="chestBtn" style="--tc:#FFF8E1; --tb:#F8DE87"><span class="ico">${chestReady?"🎁":"📦"}</span><span><h3>صندوق اليوم</h3><p>${chestReady?"افتحه وخد +20 XP ومعلومة حلوة":"اتفتح النهارده. ارجع بكرة!"}</p></span></button>
+    <button class="tile" id="speedBtn" style="--tc:#FFEFF5; --tb:#FFC4D5"><span class="ico">⏱️</span><span><h3>تحدي السرعة</h3><p>أكتر أسئلة في 60 ثانية. أحسن نتيجة: ${S.best}</p></span></button>
+    <button class="tile" id="wardBtn" style="--tc:#F3EEFF; --tb:#D8CCFF"><span class="ico">👒</span><span><h3>دولاب سمسم</h3><p>لبّس سمسم حاجات جديدة بنقاط XP</p></span></button>
+    <button class="tile" id="albumBtn" style="--tc:#EAF7FF; --tb:#C4E1FB"><span class="ico">🏅</span><span><h3>الشارات والملصقات</h3><p>${earnedBadges().length} شارة · ${WORLDS.filter((_,i)=>worldDone(i)).length} ملصق</p></span></button>
+    <button class="tile" id="boardBtn" style="--tc:#E9FBF2; --tb:#A9EBCB"><span class="ico">🏆</span><span><h3>لوحة أبطال الفصل</h3><p>للمعلّم: نقاط الطلاب، و +5 لمساعدة زميل</p></span></button>
+    <button class="tile" id="certBtn" style="--tc:#FFF6D8; --tb:#F0B429"><span class="ico">🎓</span><span><h3>شهادة التخرج</h3><p>${dn===L.length ? "جاهزة! اكتب اسمك عليها" : `بتتفتح لما تخلّص الـ ${L.length} مستوى`}</p></span></button>
+  </section>
+  <div class="legend">${Object.values(KINDS).map(k=>`<span>${k.e} ${k.n}</span>`).join("")}</div>`;
+  PHASES.forEach(ph=>{
+    const pl = L.filter(l=>ph.ws.includes(l.w)), pd = pl.filter(l=>S.done[l.id]).length;
+    h += `<div class="phase"><h2>${ph.t}</h2><span class="pp">${pd} / ${pl.length}</span></div><section class="worlds">`;
+    ph.ws.forEach(wi=>{
+      const w = WORLDS[wi], ls = L.filter(l=>l.w===wi), got = ls.filter(l=>S.done[l.id]).length;
+      h += `<article class="world" style="--wc:${w.c}; --wb:${w.b}">
+        <div class="world-head"><span class="sticker">${w.e}</span><div><div class="wn"><span class="ses">${esc(w.ses)}</span>${got}/${ls.length}</div><h3>${esc(w.name)}</h3><span class="token">${esc(w.token)}</span></div>${got===ls.length?'<span class="badge-done">خلصتها ✓</span>':''}</div>
+        <div class="world-body"><p>${esc(w.desc)}</p><div class="coins">`;
+      ls.forEach(l=>{
+        const un = unlocked(l.n), d = S.done[l.id];
+        const cls = d ? "done" : !un ? "locked" : (l.n===nu ? "current" : "");
+        h += `<button class="coin ${cls}" data-i="${l.n}" ${un?"":'aria-disabled="true"'} aria-label="المستوى ${l.n+1}: ${esc(l.title)}، ${KINDS[l.type].n}${un?"":" (مقفول)"}">
+          <span class="disc">${un ? (l.n+1) : '<svg><use href="#lock"/></svg>'}<span class="kind" aria-hidden="true">${KINDS[l.type].e}</span></span>
+          ${d ? starsHTML(d) : ""}<span class="mini">${esc(l.title)}</span></button>`;
+      });
+      h += `</div></div></article>`;
+    });
+    h += `</section>`;
+  });
+  h += `<section class="grad">${mascot("cap")}<div><h3>🎓 الحصة 12: يوم العرض والتخرج</h3><p>كل بطل يعرض اللعبة اللي عدّل عليها وضاف ليها أفكاره، وياخد شهادة Python Game Developer.</p></div><button class="btn big sun" id="gradBtn">افتح الشهادة</button></section>
+  <footer class="foot">
+    <span>التقدم محفوظ على الجهاز ده.</span>
+    <button class="btn small" id="allBtn">${S.all ? "اقفل المستويات تاني" : "افتح كل المستويات (للمعلّم)"}</button>
+    <button class="btn small" id="resetBtn">ابدأ من الأول</button>
+  </footer>`;
+  app.innerHTML = h; paintStats();
+  app.querySelectorAll(".coin").forEach(b=> b.onclick = () => { const i=+b.dataset.i; if(unlocked(i)) openLevel(i); else { beep("bad"); b.animate && b.animate([{transform:"translateX(-5px)"},{transform:"translateX(5px)"},{transform:"none"}],{duration:250}); } });
+  document.getElementById("goBtn").onclick = () => openLevel(nextUndone());
+  document.getElementById("playBtn").onclick = openPlay;
+  document.getElementById("chestBtn").onclick = openChest;
+  document.getElementById("speedBtn").onclick = openSpeed;
+  document.getElementById("wardBtn").onclick = openWardrobe;
+  document.getElementById("albumBtn").onclick = openAlbum;
+  document.getElementById("boardBtn").onclick = openBoard;
+  document.getElementById("certBtn").onclick = openCert;
+  document.getElementById("gradBtn").onclick = openCert;
+  document.getElementById("allBtn").onclick = () => { S.all = !S.all; save(); renderMap(); };
+  const rb = document.getElementById("resetBtn"); let armed = false;
+  rb.onclick = () => {
+    if(!armed){ armed = true; rb.textContent = "متأكد؟ دوس تاني علشان تمسح تقدمك"; setTimeout(()=>{ if(armed){ armed=false; rb.textContent="ابدأ من الأول"; } }, 4000); return; }
+    S = {done:{}, quiz:{}, code:{}, hint:{}, sol:{}, xp:0, all:false, sound:S.sound, outfit:"bow", chest:"", best:0, combo:0, cm:{}, bh:{}, board:S.board, name:S.name}; save(); renderMap();
+  };
+  window.scrollTo({top:0});
+}
+
+/* ===================== ركن الألعاب ===================== */
+function modal(html, wide){
+  modalRoot.innerHTML = `<div class="modal" role="dialog" aria-modal="true"><div class="modal-card ${wide?"wide":""}">${html}</div></div>`;
+  modalRoot.querySelector(".modal").addEventListener("click", e=>{ if(e.target.classList.contains("modal")) closeModal(); });
+}
+function closeModal(){ modalRoot.innerHTML = ""; }
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && modalRoot.innerHTML) closeModal(); });
+
+function openChest(){
+  const fact = FACTS[(Math.random()*FACTS.length)|0];
+  if(S.chest === today()){
+    modal(`${mascot()}<h2>الصندوق فاضي دلوقتي</h2><p>فتحته النهارده خلاص. ارجع بكرة تلاقي هدية جديدة!</p><div class="say blueish" style="text-align:start">${mascot()}<div class="txt"><b>معلومة:</b> ${esc(fact)}</div></div><div class="modal-actions"><button class="btn pink" id="mClose">ماشي</button></div>`);
+  } else {
+    S.chest = today(); addXP(20); beep("win"); confetti();
+    modal(`<div style="font-size:4.5rem; line-height:1">🎁</div><h2>هدية اليوم!</h2><span class="xpgain">+20 XP</span><div class="say blueish" style="text-align:start">${mascot()}<div class="txt"><b>هل تعرف؟</b> ${esc(fact)}</div></div><div class="modal-actions"><button class="btn pink" id="mClose">شكراً يا سمسم!</button></div>`);
+  }
+  document.getElementById("mClose").onclick = renderMap;
+}
+function openWardrobe(){
+  modal(`<h2>دولاب سمسم</h2><p>كل ما تجمع XP أكتر، حاجات جديدة بتتفتح. معاك ${S.xp} XP</p>
+   <div class="grid-items">${OUTFITS.map(o=>{ const ok = S.xp >= o.xp; return `<button class="item ${S.outfit===o.id?"sel":""} ${ok?"":"locked"}" data-o="${o.id}" ${ok?"":'aria-disabled="true"'}>${mascot(o.id)}<span>${esc(o.n)}</span><small>${ok ? (S.outfit===o.id?"لابسها":"البس") : o.xp+" XP"}</small></button>`; }).join("")}</div>
+   <div class="modal-actions"><button class="btn pink" id="mClose">تمام</button></div>`, true);
+  modalRoot.querySelectorAll(".item").forEach(b=> b.onclick = () => {
+    const o = OUTFITS.find(x=>x.id===b.dataset.o);
+    if(S.xp < o.xp){ beep("bad"); return; }
+    S.outfit = o.id; save(); beep("pop"); openWardrobe(); paintStats();
+  });
+  document.getElementById("mClose").onclick = renderMap;
+}
+function openAlbum(){
+  modal(`<h2>الشارات والملصقات</h2>
+   <h3>🏅 الشارات</h3>
+   <div class="grid-items">${BADGES.map(b=>{ const ok = b.ok(); return `<div class="item ${ok?"":"locked"}" style="cursor:default; ${ok?"background:#F3EEFF; border-color:#D8CCFF":""}"><span class="stk">${b.e}</span><span>${esc(b.n)}</span><small>${esc(b.d)}</small></div>`; }).join("")}</div>
+   <h3>📒 ملصقات الحصص</h3><p>خلّص كل مستويات الحصة علشان تاخد الملصق بتاعها.</p>
+   <div class="grid-items">${WORLDS.map((w,i)=>{ const ok = worldDone(i); return `<div class="item ${ok?"":"locked"}" style="cursor:default; ${ok?`background:${w.c}; border-color:${w.b}`:""}"><span class="stk">${ok?w.e:"❔"}</span><span>${ok?esc(w.sticker):"لسه"}</span><small>${esc(w.ses)} · ${esc(w.name)}</small></div>`; }).join("")}</div>
+   <div class="modal-actions"><button class="btn pink" id="mClose">قفل</button></div>`, true);
+  document.getElementById("mClose").onclick = closeModal;
+}
+
+function openBoard(){
+  const rows = S.board.map((s,i)=>Object.assign({}, s, {i})).sort((a,b)=>b.p-a.p);
+  const medal = r => r===0 ? "🥇" : r===1 ? "🥈" : r===2 ? "🥉" : (r+1);
+  modal(`<h2>لوحة أبطال الفصل</h2><p>اكتب أسماء الطلاب في أول الحصة وزوّد نقطهم: التفاعل +10، حل التحدي +20، مساعدة زميل +5.</p>
+   <div class="board">
+     <form class="addrow" id="addForm"><input id="stuName" placeholder="اسم الطالب" autocomplete="off" maxlength="30" aria-label="اسم الطالب"><button class="btn mint" type="submit">ضيف</button></form>
+     ${rows.length ? rows.map((s,r)=>`<div class="brow"><span class="rk">${medal(r)}</span><span class="nm">${esc(s.n)}</span><span class="pts">${s.p} XP</span>
+       <span class="acts"><button class="btn small sky" data-i="${s.i}" data-p="10">تفاعل +10</button><button class="btn small pink" data-i="${s.i}" data-p="20">تحدي +20</button><button class="btn small sun" data-i="${s.i}" data-p="5">ساعد زميل +5</button><button class="btn small" data-del="${s.i}" aria-label="امسح ${esc(s.n)}">✕</button></span></div>`).join("")
+       : `<div class="brow" style="justify-content:center"><span class="nm" style="text-align:center; color:var(--muted)">لسه مفيش طلاب. ضيف أول بطل!</span></div>`}
+   </div>
+   <div class="modal-actions"><button class="btn pink" id="mClose">قفل</button></div>`, true);
+  document.getElementById("addForm").onsubmit = e => { e.preventDefault(); const v = document.getElementById("stuName").value.trim(); if(!v) return; S.board.push({n:v, p:0}); save(); beep("pop"); openBoard(); setTimeout(()=>{ const x=document.getElementById("stuName"); if(x) x.focus(); }, 50); };
+  modalRoot.querySelectorAll("[data-p]").forEach(b=> b.onclick = () => { const s = S.board[+b.dataset.i]; s.p += +b.dataset.p; save(); beep("ok"); openBoard(); });
+  modalRoot.querySelectorAll("[data-del]").forEach(b=>{ let armed=false; b.onclick = () => { if(!armed){ armed=true; b.textContent="متأكد؟"; return; } S.board.splice(+b.dataset.del,1); save(); openBoard(); }; });
+  document.getElementById("mClose").onclick = closeModal;
+}
+
+function openCert(){
+  const ready = doneCount()===L.length;
+  const d = new Date();
+  const date = d.getDate()+"/"+(d.getMonth()+1)+"/"+d.getFullYear();
+  modal(`<div class="cert ${ready?"":"locked"}">
+     ${mascot("cap")}
+     <div class="t1">شهادة مبرمج ألعاب بايثون</div>
+     <div class="t2">PYTHON GAME DEVELOPER</div>
+     <p>تشهد مغامرة سمسم إن البطل/ة</p>
+     <div class="who" id="certWho">${esc(S.name || "اسمك هنا")}</div>
+     <p>خلّص/ت رحلة المبرمج الصغير: 12 حصة و${L.length} مستوى، وبنى لعبة المشنوق ومغامرة المتاهة.</p>
+     <div class="meta"><span>⭐ ${totalStars()} نجمة</span><span>XP ${S.xp}</span><span>🏅 ${earnedBadges().length} شارة</span><span>📅 ${date}</span></div>
+     <div class="sig">التوقيع: سمسم 🐍💚</div>
+   </div>
+   ${ready ? `<form class="addrow" id="nameForm" style="width:100%"><input id="certName" placeholder="اكتب اسمك على الشهادة" value="${esc(S.name)}" maxlength="40" autocomplete="off" aria-label="اسمك على الشهادة"><button class="btn mint" type="submit">اكتبه</button></form><p>خد صورة للشاشة واحتفظ بيها، أو اعرضها يوم التخرج! 🎉</p>`
+     : `<p>الشهادة بتتفتح لما تخلّص كل المستويات. فاضلك ${L.length - doneCount()} مستوى. يلا يا بطل!</p>`}
+   <div class="modal-actions"><button class="btn pink" id="mClose">قفل</button></div>`, true);
+  if(ready){
+    if(!S.certShown){ S.certShown = 1; save(); confetti(); beep("win"); }
+    document.getElementById("nameForm").onsubmit = e => { e.preventDefault(); S.name = document.getElementById("certName").value.trim(); save(); document.getElementById("certWho").textContent = S.name || "اسمك هنا"; beep("pop"); };
+  }
+  document.getElementById("mClose").onclick = closeModal;
+}
+
+function questionPool(){
+  const qs = [];
+  L.forEach(l=>{
+    if(l.quiz) qs.push({q:l.quiz.q, code:l.quiz.code, opts:l.quiz.opts, a:l.quiz.a});
+    if(l.type==="predict") qs.push({q:"إيه اللي هيطلع على الشاشة؟", code:l.code, opts:l.opts, a:l.a});
+  });
+  return shuffle(qs);
+}
+function openSpeed(){
+  leave();
+  app.innerHTML = `<div class="lvl-top"><button class="btn" id="mapBtn">الخريطة</button><div class="crumb"><small>ركن الألعاب</small><h1>تحدي السرعة ⏱️</h1></div></div>
+  <div class="speed"><section class="panel quiz"><div class="panel-h"><span class="tag">إزاي تلعب</span> 60 ثانية بس!</div><div class="panel-b">
+    ${say("هسألك أسئلة سريعة من كل اللي اتعلمته. كل إجابة صح = نقطة، وكل نقطة = 3 XP. الغلط مش بيخصم، بس بيضيّع وقت!")}
+    <p style="font-weight:800">أحسن نتيجة ليك: ${S.best}</p>
+    <div class="actions"><button class="btn big pink" id="startSpeed">ابدأ!</button></div></div></section></div>`;
+  document.getElementById("mapBtn").onclick = renderMap;
+  document.getElementById("startSpeed").onclick = runSpeed;
+  window.scrollTo({top:0});
+}
+function runSpeed(){
+  let pool = questionPool(), qi = 0, score = 0, left = 60, locked = false;
+  app.innerHTML = `<div class="lvl-top"><button class="btn" id="mapBtn">الخريطة</button><div class="crumb"><small>ركن الألعاب</small><h1>تحدي السرعة ⏱️</h1></div></div>
+  <div class="speed"><div class="speed-top"><span class="score" id="spScore">0</span><div class="timer" id="spTimer"><i style="width:100%"></i></div><b id="spLeft">60</b></div>
+  <section class="panel task"><div class="panel-b" id="spQ"></div></section></div>`;
+  document.getElementById("mapBtn").onclick = renderMap;
+  const tEl = document.getElementById("spTimer"), lEl = document.getElementById("spLeft");
+  function show(){
+    if(qi >= pool.length) pool = pool.concat(questionPool());
+    const q = pool[qi], ord = shuffle(q.opts.map((o,k)=>k));
+    document.getElementById("spQ").innerHTML = `<p class="quiz-q">${esc(q.q)}</p>${q.code?`<div class="snip"><pre>${hl(q.code)}</pre></div>`:""}
+      <div class="opts">${ord.map(k=>`<button class="opt ${/^[\x00-\x7F\s]+$/.test(q.opts[k])?"mono":""}" data-k="${k}">${esc(q.opts[k])}</button>`).join("")}</div>`;
+    document.querySelectorAll("#spQ .opt").forEach(b=> b.onclick = () => {
+      if(locked) return;
+      if(+b.dataset.k===q.a){ locked = true; b.classList.add("right"); score++; document.getElementById("spScore").textContent = score; beep("ok"); setTimeout(()=>{ locked=false; qi++; if(speedTimer) show(); }, 380); }
+      else { b.classList.add("wrong"); b.disabled = true; beep("bad"); }
+    });
+  }
+  show();
+  speedTimer = setInterval(()=>{
+    left--; lEl.textContent = left; tEl.firstElementChild.style.width = (left/60*100)+"%";
+    if(left<=10) tEl.classList.add("low");
+    if(left<=0){ stopSpeed(); endSpeed(score); }
+  }, 1000);
+}
+function endSpeed(score){
+  const before = earnedBadges();
+  const isBest = score > S.best; if(isBest) S.best = score;
+  const gain = score*3; addXP(gain); save();
+  if(score>0){ beep("win"); confetti(); }
+  const nb = BADGES.filter(b=>b.ok() && !before.includes(b.id));
+  modal(`${mascot()}<h2>${isBest && score>0 ? "رقم قياسي جديد!" : score>=8 ? "سريع زي الصاروخ!" : "حلو أوي!"}</h2><p>جاوبت صح على</p><div class="score" style="font-size:3.2rem">${score}</div>${gain?`<span class="xpgain">+${gain} XP</span>`:""}<p>أحسن نتيجة: ${S.best}</p>
+   ${nb.map(b=>`<div class="newbadge">شارة جديدة: ${b.e} ${esc(b.n)}</div>`).join("")}
+   <div class="modal-actions"><button class="btn big pink" id="mAgain">العب تاني</button><button class="btn big" id="mMap">الخريطة</button></div>`);
+  document.getElementById("mAgain").onclick = () => { closeModal(); runSpeed(); };
+  document.getElementById("mMap").onclick = renderMap;
+}
+
+/* ===================== المحرر ===================== */
+function editorHTML(){
+  return `
+  <div class="keys" role="toolbar" aria-label="رموز سريعة">
+    ${['()','""','[]','{}',':','=','+','-','*','/','%','<','>','#','_',','].map(k=>`<button class="key" data-k="${esc(k)}">${esc(k)}</button>`).join("")}
+    <button class="key" data-k="TAB" aria-label="4 مسافات">⇥</button>
+  </div>
+  <p class="keys-note">اكتب الأوامر بالحروف الإنجليزي. زرار ⇥ بيحط 4 مسافات، و Ctrl + Enter بيشغّل الكود.</p>
+  <div class="editor-wrap"><div class="ed-bar"><i style="background:#FF8FB1"></i><i style="background:#FFD95E"></i><i style="background:#8FE3BE"></i><span>samsam.py</span></div>
+  <div class="editor"><div class="gutter" id="gutter"></div><div class="code-area"><pre aria-hidden="true"><code id="hlCode"></code></pre><textarea id="codeBox" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" dir="ltr" aria-label="محرر الكود"></textarea></div></div></div>`;
+}
+function setupEditor(initial, onChange){
+  const ta = document.getElementById("codeBox"), pre = ta.previousElementSibling, code = document.getElementById("hlCode"), gut = document.getElementById("gutter");
+  let errLine = null;
+  function paint(){
+    const v = ta.value;
+    code.innerHTML = hl(v) + (v.endsWith("\n") ? " " : "");
+    const n = v.split("\n").length; let g = "";
+    for(let i=1;i<=n;i++) g += `<div${i===errLine?' class="err"':""}>${i}</div>`;
+    gut.innerHTML = g; sync();
+  }
+  function sync(){ pre.scrollTop = ta.scrollTop; pre.scrollLeft = ta.scrollLeft; gut.scrollTop = ta.scrollTop; }
+  function insert(text, back){
+    const s = ta.selectionStart, e = ta.selectionEnd; ta.focus();
+    ta.setRangeText(text, s, e, "end");
+    if(back) ta.selectionStart = ta.selectionEnd = ta.selectionEnd - back;
+    paint(); onChange(ta.value);
+  }
+  ta.value = initial; paint();
+  ta.addEventListener("input", ()=>{ errLine=null; paint(); onChange(ta.value); });
+  ta.addEventListener("scroll", sync);
+  ta.addEventListener("keydown", ev=>{
+    if(ev.key==="Tab"){
+      ev.preventDefault();
+      if(ev.shiftKey){
+        const s = ta.selectionStart, ls = ta.value.lastIndexOf("\n", s-1)+1;
+        const lead = /^ {1,4}/.exec(ta.value.slice(ls)); if(lead){ ta.setRangeText("", ls, ls+lead[0].length, "end"); ta.selectionStart = ta.selectionEnd = Math.max(ls, s-lead[0].length); paint(); onChange(ta.value); }
+      } else insert("    ");
+    } else if(ev.key==="Enter" && (ev.ctrlKey||ev.metaKey)){
+      ev.preventDefault(); const rb = document.getElementById("runBtn"); if(rb && !rb.hidden) rb.click();
+    } else if(ev.key==="Enter"){
+      ev.preventDefault();
+      const s = ta.selectionStart, ls = ta.value.lastIndexOf("\n", s-1)+1, line = ta.value.slice(ls, s);
+      let ind = (/^\s*/.exec(line)||[""])[0];
+      if(/:\s*(#.*)?$/.test(line)) ind += "    ";
+      insert("\n"+ind);
+    } else if(ev.key==="Backspace" && ta.selectionStart===ta.selectionEnd){
+      const s = ta.selectionStart, ls = ta.value.lastIndexOf("\n", s-1)+1, before = ta.value.slice(ls, s);
+      if(before.length>=4 && /^ +$/.test(before)){ ev.preventDefault(); const k = before.length%4 || 4; ta.setRangeText("", s-k, s, "end"); paint(); onChange(ta.value); }
+    }
+  });
+  document.querySelectorAll(".key").forEach(b=> b.onclick = () => {
+    const k = b.dataset.k;
+    if(k==="TAB") insert("    ");
+    else if(k.length===2 && ["()","\"\"","[]","{}"].includes(k)) insert(k, 1);
+    else insert(k);
+  });
+  return { get: () => ta.value, set: v => { ta.value = v; errLine=null; paint(); onChange(v); }, markErr: n => { errLine = n; paint(); } };
+}
+
+/* ===================== الكونسول والنتائج ===================== */
+function showConsole(items, label){
+  const box = document.getElementById("console");
+  if(!box) return;
+  let h = `<div class="title">${esc(label||"شاشة البرنامج")}</div>`, text = "";
+  items.forEach(it=>{ if(it.k==="o") text += it.t; else text += "\u0000IN" + it.p + "\u0001" + (it.missing ? "⟨مفيش مدخل!⟩" : it.v) + "\u0002\n"; });
+  if(text.length > 6000) text = text.slice(0, 6000) + "\n…";
+  if(!text) h += `<div class="ln muted">البرنامج اشتغل ومطبعش حاجة.</div>`;
+  else text.replace(/\n$/,"").split("\n").forEach(l=>{
+    const m = /^(.*)\u0000IN(.*)\u0001(.*)\u0002$/.exec(l);
+    h += m ? `<div class="ln">${esc(m[1]+m[2])}<span class="in">${esc(m[3])}</span></div>` : `<div class="ln">${esc(l)}</div>`;
+  });
+  box.innerHTML = h; box.scrollTop = box.scrollHeight;
+}
+function fb(kind, title, bodyHTML){
+  const el = document.getElementById("feedback");
+  if(!el) return;
+  el.innerHTML = `<div class="fb ${kind}">${mascot()}<div class="fb-body"><h4>${esc(title)}</h4>${bodyHTML||""}</div></div>`;
+  el.scrollIntoView({block:"nearest", behavior:"smooth"});
+}
+let onSyntax = null;
+function errFeedback(r, code, ed, note){
+  const info = errInfo(r.err, r.tooMuch), f = friendly(info, code);
+  if(/Syntax|Indentation|Parse|Token/.test(info.name) && onSyntax) onSyntax();
+  const lines = code.split("\n").length;
+  if(ed && info.line && info.line <= lines) ed.markErr(info.line);
+  const inTest = info.line && info.line > lines && info.name!=="TimeLimitError";
+  fb("bad", inTest ? "الدالة بتاعتك وقعت وسمسم بيجربها" : f.t, `<p>${esc(f.p)}</p>${note?`<p>${note}</p>`:""}<div class="tech">${esc(info.name==="TimeLimitError"?"TimeLimitError: program ran too long":info.msg)}</div>`);
+  beep("bad");
+}
+function skOk(){
+  if(typeof Sk === "undefined" || !Sk.importMainWithBody){ fb("bad","بايثون لسه ماتحمّلش",`<p>اتأكد إن النت شغال، وبعدين اعمل تحديث للصفحة.</p>`); return false; }
+  return true;
+}
+async function runTests(l, code, ed){
+  const tests = l.tests || [{inputs:[], expected:l.expected}];
+  for(let ti=0; ti<tests.length; ti++){
+    const t = tests[ti], MARK = "@@SAMSAM_CHECK@@";
+    const full = t.call ? code + "\n\nprint(\""+MARK+"\")\n" + t.call + "\n" : code;
+    const r = await runPython(full, t.inputs||[]);
+    let got = r.out;
+    if(t.call){ const ix = got.indexOf(MARK+"\n"); got = ix>=0 ? got.slice(ix+MARK.length+1) : ""; }
+    showConsole(t.call ? [{k:"o", t:got}] : r.items, tests.length>1 ? `تجربة ${ti+1} من ${tests.length}` : "شاشة البرنامج");
+    const inNote = t.inputs && t.inputs.length ? `سمسم كتب للبرنامج: <b>${esc(t.inputs.join("، "))}</b>` : "";
+    if(r.err){ errFeedback(r, code, ed, inNote); return false; }
+    if(r.items.some(it=>it.k==="i" && it.missing)){ fb("bad","برنامجك طلب مدخلات أكتر من اللازم",`<p>${inNote}</p><p>اتأكد إنك بتستخدم input() بعدد المرات المطلوبة بس، وإن الحلقة بتخرج بـ break.</p>`); beep("bad"); return false; }
+    if(t.check){
+      const m = t.check(got);
+      if(m){ fb("bad","قرّبت! بس الناتج مش مظبوط",`<div class="cmp"><div><b>برنامجك طلّع</b><pre>${esc(got.replace(/\n$/,""))}</pre></div></div><p>${esc(m)}</p>`); beep("bad"); return false; }
+      continue;
+    }
+    let A = norm(got), B = norm(t.expected);
+    if(l.anyOrder){ A = A.split("\n").sort().join("\n"); B = B.split("\n").sort().join("\n"); }
+    if(A !== B){
+      let tip;
+      if(!A) tip = "برنامجك مطبعش حاجة خالص. متنساش print!";
+      else if(/^None$/m.test(A) && t.call) tip = "طلع None؟ يبقى الدالة بتطبع أو مبترجّعش حاجة. استخدم return.";
+      else if(A.split("\n").length !== B.split("\n").length) tip = `المطلوب ${B.split("\n").length} سطر، وبرنامجك طبع ${A.split("\n").length}.`;
+      else tip = "قارن السطور كويس، حرف حرف.";
+      const callNote = t.call ? `سمسم جرّب: <code class="ic">${esc(t.show)}</code>` : inNote;
+      fb("bad","قرّبت! بس الناتج مختلف",`${callNote?`<p>${callNote}</p>`:""}<div class="cmp"><div><b>المطلوب</b><pre>${esc(t.expected)}</pre></div><div><b>برنامجك طلّع</b><pre>${esc(got.replace(/\n$/,""))}</pre></div></div><p>${esc(tip)}</p>`);
+      beep("bad"); return false;
+    }
+  }
+  const clean = stripComments(code);
+  for(const [re,msg] of (l.need||[])) if(!re.test(clean)){ fb("warn","الناتج صح! بس فاضل حاجة",`<p>${esc(msg)}</p>`); beep("bad"); return false; }
+  for(const [re,msg] of (l.avoid||[])) if(re.test(clean)){ fb("warn","الناتج صح! بس…",`<p>${esc(msg)}</p>`); beep("bad"); return false; }
+  if(l.extra){ const m = l.extra(clean); if(m){ fb("warn","الناتج صح! بس فاضل حاجة",`<p>${esc(m)}</p>`); beep("bad"); return false; } }
+  return true;
+}
+
+/* ===================== شاشة المستوى ===================== */
+function levelTop(l){
+  const i = l.n, w = WORLDS[l.w], prevOk = i>0, nextOk = i<L.length-1 && unlocked(i+1);
+  return `<div class="lvl-top">
+    <button class="btn" id="mapBtn">الخريطة</button>
+    <div class="crumb"><small>${w.e} ${esc(w.ses)} · ${esc(w.name)} · المستوى ${i+1} من ${L.length}</small><h1>${esc(l.title)} <span class="kindtag">${KINDS[l.type].e} ${KINDS[l.type].n}</span></h1></div>
+    <div class="lvl-nav">
+      <button class="btn" id="prevBtn" ${prevOk?"":"disabled"} aria-label="المستوى اللي قبله">→</button>
+      <button class="btn" id="nextBtn" ${nextOk?"":"disabled"} aria-label="المستوى اللي بعده">←</button>
+    </div></div>`;
+}
+function wireTop(l){
+  const i = l.n;
+  document.getElementById("mapBtn").onclick = renderMap;
+  document.getElementById("prevBtn").onclick = () => i>0 && openLevel(i-1);
+  document.getElementById("nextBtn").onclick = () => (i<L.length-1 && unlocked(i+1)) && openLevel(i+1);
+}
+function openLevel(i){
+  leave(); onSyntax = null;
+  const l = L[i];
+  if(l.type==="predict") return openPredict(l);
+  if(l.type==="order") return openOrder(l);
+  if(l.type==="play") return openPlayLevel(l);
+  return openCode(l);
+}
+const xpLabel = l => `+${l.type==="play"?10:20} XP`;
+
+function openCode(l){
+  const w = WORLDS[l.w];
+  const tests = l.tests || [{inputs:[], expected:l.expected}];
+  const usesInput = tests.some(t=>t.inputs && t.inputs.length) || !!l.stdin;
+  let hadSyntax = false; onSyntax = () => { hadSyntax = true; };
+  let left = "";
+  if(l.lesson){
+    let lesson = "";
+    l.lesson.forEach(b=>{
+      if(b.p) lesson += `<p>${rich(b.p)}</p>`;
+      if(b.code) lesson += `<div class="snip"><pre>${hl(b.code)}</pre>${b.out!=null?`<div class="out">${esc(b.out)}</div>`:""}</div>`;
+      if(b.tip) lesson += say(b.tip);
+    });
+    const q = l.quiz;
+    left = `<section class="panel lessonp"><div class="panel-h"><span class="tag">📖 الشرح</span> ${esc(l.title)}</div><div class="panel-b lesson">${lesson}</div></section>
+      <section class="panel quiz"><div class="panel-h"><span class="tag">سؤال سريع</span> ${S.quiz[l.id]?"✓ جاوبته":"+10 XP"}</div>
+        <div class="panel-b"><p class="quiz-q">${esc(q.q)}</p>${q.code?`<div class="snip"><pre>${hl(q.code)}</pre></div>`:""}
+          <div class="opts">${q.opts.map((o,k)=>`<button class="opt ${/^[\x00-\x7F\s]+$/.test(o)?"mono":""}" data-k="${k}">${esc(o)}</button>`).join("")}</div>
+          <div id="quizWhy"></div></div></section>`;
+  } else {
+    left = `<section class="panel lessonp"><div class="panel-h"><span class="tag">🔧 مهمة إصلاح</span> النجدة!</div><div class="panel-b lesson">
+      ${say(l.story, "pinkish")}
+      ${say("نصيحة: دوس «شغّل» الأول، واقرا الغلطة بتقول إيه وفي أنهي سطر. السطر الغلطان بيتلوّن بالأحمر. لو صلحته من غير تلميح تقرّب من شارة Bug Hunter 🐞", "blueish")}
+    </div></section>`;
+  }
+  const expectBlock = l.expectText ? `<div class="expect"><span>الناتج المطلوب:</span><pre>${esc(l.expectText)}</pre></div>` :
+                      (l.expectShow || !l.tests) && l.expected ? `<div class="expect"><span>الناتج المطلوب:</span><pre>${esc(l.expected)}</pre></div>` :
+                      (l.tests && l.tests[0].call ? `<div class="expect"><span>سمسم هيجرب:</span><pre dir="ltr" style="text-align:left">${esc(l.tests[0].show)}</pre></div>` : "");
+  const tagName = l.type==="fix" ? "صلّح" : l.type==="quest" ? "🏆 Quest" : "التدريب";
+  app.innerHTML = `<div style="--wc:${w.c}; --wb:${w.b}">${levelTop(l)}
+  <div class="bench">
+    <div class="col">${left}</div>
+    <div class="col">
+      <section class="panel task"><div class="panel-h"><span class="tag">${tagName}</span> ${S.done[l.id]?starsHTML(S.done[l.id]):xpLabel(l)}</div>
+        <div class="panel-b">
+          <p class="task-text">${rich(l.task)}</p>
+          ${expectBlock}
+          ${editorHTML()}
+          ${usesInput?`<div class="stdin"><label for="stdinBox">المدخلات (اللي هتتكتب لـ input)</label><small>كل قيمة في سطر. دي لزرار «شغّل» بس، و«تحقّق» بيجرب قيم تانية.</small><textarea id="stdinBox" dir="auto">${esc(l.stdin||"")}</textarea></div>`:""}
+          <div class="actions">
+            <button class="btn sky" id="runBtn"><svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z" fill="currentColor"/></svg>شغّل</button>
+            <button class="btn mint big" id="checkBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>تحقّق</button>
+            <span class="spacer"></span>
+            <button class="btn sun" id="hintBtn">💡 تلميح</button>
+            <button class="btn" id="solBtn">الحل</button>
+            <button class="btn" id="resetCodeBtn">من الأول</button>
+          </div>
+          <div id="hintArea"></div>
+          <div class="console" id="console" aria-live="polite"><div class="title">شاشة البرنامج</div><div class="ln muted">دوس «شغّل» علشان تشوف برنامجك بيعمل إيه.</div></div>
+          <div id="feedback" aria-live="polite"></div>
+        </div></section>
+    </div>
+  </div></div>`;
+  paintStats(); wireTop(l);
+
+  if(l.quiz){
+    const q = l.quiz, why = document.getElementById("quizWhy"); let tries = 0;
+    app.querySelectorAll(".opt").forEach(b=> b.onclick = () => {
+      const k = +b.dataset.k;
+      if(k===q.a){
+        app.querySelectorAll(".opt").forEach(x=>x.disabled = true); b.classList.add("right");
+        why.innerHTML = `<div class="quiz-why ok">صح! ${esc(q.why)}</div>`;
+        if(!S.quiz[l.id]){ S.quiz[l.id]=1; addXP(tries===0 ? 10 : 5); }
+        beep("ok");
+      } else {
+        tries++; b.classList.remove("wrong"); void b.offsetWidth; b.classList.add("wrong");
+        why.innerHTML = `<div class="quiz-why no">مش دي. فكّر تاني وجرّب إجابة تانية.</div>`; beep("bad");
+      }
+    });
+  }
+
+  let tmr;
+  const ed = setupEditor(S.code[l.id] != null ? S.code[l.id] : l.starter, v => { clearTimeout(tmr); tmr = setTimeout(()=>{ S.code[l.id] = v; save(); }, 300); });
+  const runBtn = document.getElementById("runBtn"), checkBtn = document.getElementById("checkBtn");
+  const busy = on => { running = on; runBtn.disabled = on; checkBtn.disabled = on; };
+  const pre = code => { const pc = precheck(code); if(pc){ ed.markErr(pc.line); fb("warn","استنى! فيه حاجة محتاجة تتصلح",`<p>${esc(pc.msg)}</p>`); beep("bad"); return false; } return true; };
+
+  runBtn.onclick = async () => {
+    if(running || !skOk()) return;
+    const code = ed.get(); document.getElementById("feedback").innerHTML = "";
+    if(!pre(code)) return;
+    const sb = document.getElementById("stdinBox");
+    const inputs = sb ? sb.value.split("\n").filter((x,ix,arr)=> !(ix===arr.length-1 && x==="")) : [];
+    busy(true); const r = await runPython(code, inputs); busy(false);
+    showConsole(r.items);
+    if(r.err) errFeedback(r, code, ed);
+    else if(r.items.some(it=>it.k==="i" && it.missing)) fb("warn","البرنامج طلب مدخل ومالقاش",`<p>اكتب قيمة في خانة المدخلات تحت المحرر.</p>`);
+    else if(l.tests && l.tests[0].call) fb("warn","الكود اشتغل من غير غلطات",`<p>دوس «تحقّق» علشان سمسم يجرب الدالة بتاعتك.</p>`);
+  };
+  checkBtn.onclick = async () => {
+    if(running || !skOk()) return;
+    const code = ed.get(); document.getElementById("feedback").innerHTML = "";
+    if(!pre(code)) return;
+    busy(true);
+    try{
+      if(await runTests(l, code, ed)){
+        const stars = S.sol[l.id] ? 1 : S.hint[l.id] ? 2 : 3;
+        if(!hadSyntax && l.type!=="fix") S.cm[l.id] = 1;
+        if(l.type==="fix" && stars===3) S.bh[l.id] = 1;
+        win(l, stars);
+      }
+    } finally{ busy(false); }
+  };
+  document.getElementById("hintBtn").onclick = () => {
+    if(!S.hint[l.id] && !S.done[l.id]){ S.hint[l.id]=1; save(); }
+    document.getElementById("hintArea").innerHTML = `<div class="hintbox"><b>💡 تلميح من سمسم:</b><div class="snip"><pre>${hl(l.hint)}</pre></div></div>`;
+  };
+  let solArmed = false;
+  document.getElementById("solBtn").onclick = ev => {
+    const btn = ev.currentTarget;
+    if(!solArmed && !S.sol[l.id] && !S.done[l.id]){ solArmed = true; btn.textContent = "متأكد؟ هتاخد نجمة واحدة"; return; }
+    if(!S.sol[l.id] && !S.done[l.id]){ S.sol[l.id]=1; save(); }
+    btn.textContent = "الحل";
+    document.getElementById("hintArea").innerHTML = `<div class="hintbox"><b>الحل:</b><div class="snip"><pre>${hl(l.solution)}</pre></div><div><button class="btn small" id="useSol">حطه في المحرر</button></div><p style="margin:0">اقراه وافهم كل سطر بيعمل إيه، وبعدين جرّب تكتبه بنفسك.</p></div>`;
+    document.getElementById("useSol").onclick = () => ed.set(l.solution + "\n");
+  };
+  let resetArmed = false;
+  document.getElementById("resetCodeBtn").onclick = ev => {
+    const btn = ev.currentTarget;
+    if(!resetArmed){ resetArmed = true; btn.textContent = "متأكد؟"; setTimeout(()=>{ resetArmed=false; btn.textContent="من الأول"; }, 3000); return; }
+    resetArmed = false; btn.textContent = "من الأول"; ed.set(l.starter);
+  };
+  window.scrollTo({top:0});
+}
+
+function liveRunner(getCode, onDone, ed){
+  const runBtn = document.getElementById("runBtn"), stopBtn = document.getElementById("stopBtn");
+  runBtn.onclick = async () => {
+    if(running || !skOk()) return;
+    const code = getCode(); document.getElementById("feedback").innerHTML = "";
+    const pc = precheck(code); if(pc){ if(ed) ed.markErr(pc.line); fb("warn","استنى! فيه حاجة محتاجة تتصلح",`<p>${esc(pc.msg)}</p>`); return; }
+    running = true; runBtn.hidden = true; stopBtn.hidden = false;
+    const r = await runLive(code, document.getElementById("console"));
+    running = false; runBtn.hidden = false; stopBtn.hidden = true;
+    if(!document.getElementById("feedback")) return;
+    if(r.stopped) fb("warn","وقّفت البرنامج",`<p>تقدر تشغّله تاني في أي وقت.</p>`);
+    else if(r.err) errFeedback(r, code, ed);
+    else if(onDone) onDone();
+  };
+  stopBtn.onclick = stopLive;
+}
+function openPlayLevel(l){
+  const w = WORLDS[l.w];
+  app.innerHTML = `<div style="--wc:${w.c}; --wb:${w.b}">${levelTop(l)}
+  <div class="bench">
+    <div class="col"><section class="panel playp"><div class="panel-h"><span class="tag">🎮 العب</span> ${esc(l.title)}</div><div class="panel-b lesson">
+      ${say(l.story, "blueish")}
+      <p style="font-weight:800">بعد ما تلعب، جرّب:</p>
+      <ol class="ideas">${l.ideas.map(x=>`<li>${rich(x)}</li>`).join("")}</ol>
+    </div></section></div>
+    <div class="col"><section class="panel task"><div class="panel-h"><span class="tag">البرنامج</span> ${S.done[l.id]?starsHTML(S.done[l.id]):xpLabel(l)}</div><div class="panel-b">
+      ${editorHTML()}
+      <div class="actions">
+        <button class="btn sky big" id="runBtn"><svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z" fill="currentColor"/></svg>شغّل والعب</button>
+        <button class="btn pink big" id="stopBtn" hidden>⏹ إيقاف</button>
+        <span class="spacer"></span>
+        <button class="btn" id="resetCodeBtn">رجّع الكود الأصلي</button>
+      </div>
+      <div class="console" id="console" aria-live="polite"><div class="title">شاشة البرنامج</div><div class="ln muted">دوس «شغّل والعب». لما البرنامج يسألك، اكتب في الخانة الصفرا ودوس Enter.</div></div>
+      <div id="feedback" aria-live="polite"></div>
+    </div></section></div>
+  </div></div>`;
+  paintStats(); wireTop(l);
+  let tmr;
+  const ed = setupEditor(S.code[l.id] != null ? S.code[l.id] : l.code, v => { clearTimeout(tmr); tmr = setTimeout(()=>{ S.code[l.id] = v; save(); }, 300); });
+  liveRunner(ed.get, () => {
+    if(!S.done[l.id]) win(l, 3, "شغّلت البرنامج ولعبت! دلوقتي جرّب تعدّل عليه بأفكارك من القائمة.");
+    else fb("good","البرنامج خلص",`<p>شغّله تاني، أو عدّل عليه وجرّب فكرة جديدة!</p>`);
+  }, ed);
+  let resetArmed = false;
+  document.getElementById("resetCodeBtn").onclick = ev => {
+    const btn = ev.currentTarget;
+    if(!resetArmed){ resetArmed = true; btn.textContent = "متأكد؟"; setTimeout(()=>{ resetArmed=false; btn.textContent="رجّع الكود الأصلي"; }, 3000); return; }
+    resetArmed = false; btn.textContent = "رجّع الكود الأصلي"; ed.set(l.code);
+  };
+  window.scrollTo({top:0});
+}
+
+function openPredict(l){
+  const w = WORLDS[l.w]; let tries = 0;
+  app.innerHTML = `<div style="--wc:${w.c}; --wb:${w.b}">${levelTop(l)}
+  <div class="bench solo"><div class="col">
+    <section class="panel quiz"><div class="panel-h"><span class="tag">🔮 خمّن الناتج</span> ${S.done[l.id]?starsHTML(S.done[l.id]):xpLabel(l)}</div>
+      <div class="panel-b">
+        ${say("بص على الكود ده كويس، وتخيّل إنك الكمبيوتر. إيه اللي هيطلع على الشاشة؟ لو جاوبت صح من أول مرة تاخد 3 نجوم!")}
+        <div class="snip"><pre>${hl(l.code)}</pre></div>
+        <div class="opts">${l.opts.map((o,k)=>`<button class="opt ${/^[\x00-\x7F\s]+$/.test(o)?"mono":""}" data-k="${k}">${esc(o)}</button>`).join("")}</div>
+        <div id="quizWhy"></div>
+        <div class="console" id="console" hidden></div>
+      </div></section>
+  </div></div></div>`;
+  paintStats(); wireTop(l);
+  const why = document.getElementById("quizWhy");
+  app.querySelectorAll(".opt").forEach(b=> b.onclick = async () => {
+    const k = +b.dataset.k;
+    if(k===l.a){
+      app.querySelectorAll(".opt").forEach(x=>x.disabled = true); b.classList.add("right");
+      why.innerHTML = `<div class="quiz-why ok">صح! ${esc(l.why)}</div>`;
+      if(typeof Sk !== "undefined"){ const r = await runPython(l.code, []); const c = document.getElementById("console"); if(c){ c.hidden = false; showConsole(r.items, "الكمبيوتر طلّع فعلاً:"); } }
+      setTimeout(()=> win(l, tries===0 ? 3 : tries===1 ? 2 : 1, l.why), 700);
+    } else {
+      tries++; b.classList.remove("wrong"); void b.offsetWidth; b.classList.add("wrong"); b.disabled = true;
+      why.innerHTML = `<div class="quiz-why no">لأ، مش دي. امشي على الكود سطر سطر وجرّب تاني.</div>`; beep("bad");
+    }
+  });
+  window.scrollTo({top:0});
+}
+
+function openOrder(l){
+  const w = WORLDS[l.w];
+  const all = l.lines.concat(l.decoy||[]);
+  let pool = shuffle(all.map((_,k)=>k));
+  if(pool.slice(0, l.lines.length).every((v,k)=>v===k)) pool.reverse();
+  let answer = [], fails = 0, hinted = false;
+  app.innerHTML = `<div style="--wc:${w.c}; --wb:${w.b}">${levelTop(l)}
+  <div class="bench">
+    <div class="col"><section class="panel lessonp"><div class="panel-h"><span class="tag">🧩 لغز الترتيب</span> رتّب الكود</div><div class="panel-b lesson">
+      ${say(l.task)}
+      ${say("دوس على السطر علشان تنقله لبرنامجك، ودوس عليه تاني لو عايز ترجّعه. النقط اللي في أول السطر هي المسافات.", "blueish")}
+      ${l.expected ? `<div class="expect"><span>الناتج المطلوب:</span><pre>${esc(l.expected)}</pre></div>` : ""}
+    </div></section></div>
+    <div class="col"><section class="panel task"><div class="panel-h"><span class="tag">السطور</span> ${S.done[l.id]?starsHTML(S.done[l.id]):xpLabel(l)}</div><div class="panel-b">
+      <div class="zone" id="poolZ"></div>
+      <div class="zone answer" id="ansZ"></div>
+      <div class="actions"><button class="btn mint big" id="checkBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>تحقّق</button><span class="spacer"></span><button class="btn sun" id="hintBtn">💡 تلميح</button><button class="btn" id="clearBtn">رجّع كله</button></div>
+      <div id="hintArea"></div>
+      <div class="console" id="console"><div class="title">شاشة البرنامج</div><div class="ln muted">رتّب السطور ودوس «تحقّق».</div></div>
+      <div id="feedback" aria-live="polite"></div>
+    </div></section></div>
+  </div></div>`;
+  paintStats(); wireTop(l);
+  const chip = (k, no) => { const s = all[k], lead = (/^ */.exec(s)||[""])[0];
+    return `<button class="chip" data-k="${k}">${no?`<span class="no">${no}</span>`:""}<span>${lead?`<span class="lead">${lead}</span>`:""}${hlLine(s.slice(lead.length))}</span></button>`; };
+  function paint(){
+    document.getElementById("poolZ").innerHTML = `<h4>السطور المتلخبطة</h4>` + (pool.length ? pool.map(k=>chip(k)).join("") : `<div class="empty">خلصت كل السطور!</div>`);
+    document.getElementById("ansZ").innerHTML = `<h4>برنامجك</h4>` + (answer.length ? answer.map((k,ix)=>chip(k, ix+1)).join("") : `<div class="empty">دوس على سطر من فوق علشان تبدأ</div>`);
+    document.querySelectorAll("#poolZ .chip").forEach(b=> b.onclick = () => { const k=+b.dataset.k; pool = pool.filter(x=>x!==k); answer.push(k); beep("pop"); paint(); });
+    document.querySelectorAll("#ansZ .chip").forEach(b=> b.onclick = () => { const k=+b.dataset.k; answer = answer.filter(x=>x!==k); pool.push(k); paint(); });
+  }
+  paint();
+  document.getElementById("clearBtn").onclick = () => { pool = pool.concat(answer); answer = []; paint(); };
+  document.getElementById("hintBtn").onclick = () => { hinted = true; document.getElementById("hintArea").innerHTML = `<div class="hintbox"><b>💡 تلميح:</b> ${esc(l.hint)}<span>أول سطر في البرنامج هو:</span><div class="snip"><pre>${hl(l.lines[0])}</pre></div></div>`; };
+  const checkBtn = document.getElementById("checkBtn");
+  checkBtn.onclick = async () => {
+    if(running || !skOk()) return;
+    document.getElementById("feedback").innerHTML = "";
+    if(!answer.length){ fb("warn","لسه مرتّبتش حاجة",`<p>دوس على السطور اللي فوق بالترتيب الصح.</p>`); return; }
+    const code = answer.map(k=>all[k]).join("\n");
+    running = true; checkBtn.disabled = true;
+    let ok = false;
+    try{ ok = await runTests(l, code, null); } finally{ running = false; checkBtn.disabled = false; }
+    if(ok && pool.some(k=>k < l.lines.length)){ ok = false; fb("warn","الناتج صح! بس فاضل سطور",`<p>استخدم كل السطور المهمة.</p>`); }
+    if(ok) win(l, fails===0 && !hinted ? 3 : fails<=2 ? 2 : 1);
+    else fails++;
+  };
+  window.scrollTo({top:0});
+}
+
+/* ===================== الفوز ===================== */
+function win(l, stars, note){
+  const beforeBadges = earnedBadges();
+  const prev = S.done[l.id] || 0;
+  const gained = Math.max(0, levelValue(l, stars) - levelValue(l, prev));
+  if(stars > prev) S.done[l.id] = stars;
+  if(l.type!=="play") S.combo = stars===3 ? (S.combo||0) + 1 : 0;
+  const comboBonus = S.combo >= 3 && gained && l.type!=="play" ? 5 : 0;
+  const xpBefore = S.xp;
+  addXP(gained + comboBonus);
+  beep("win"); confetti();
+  const isLast = l.n === L.length-1;
+  const praise = ["برافو عليك!","إنت جامد!","عاش يا بطل!","مبرمج حقيقي!","سمسم فخور بيك!","يا سلام عليك!"][l.n % 6];
+  const wd = worldDone(l.w);
+  const outfitNew = OUTFITS.find(o=> o.xp>0 && S.xp >= o.xp && xpBefore < o.xp);
+  const newBadges = BADGES.filter(b=>b.ok() && !beforeBadges.includes(b.id));
+  const all = doneCount()===L.length;
+  modal(`${mascot()}
+    <h2>${all ? "إنت Python Game Developer! 🎓" : praise}</h2>
+    ${starsHTML(stars, "bigstars")}
+    ${gained + comboBonus ? `<span class="xpgain">+${gained + comboBonus} XP</span>` : ""}
+    ${comboBonus ? `<p><b>🔥 كومبو ×${S.combo}!</b> كذا مستوى ورا بعض بـ 3 نجوم</p>` : ""}
+    <p>${note ? esc(note) : stars===3 ? "حليتها لوحدك من غير مساعدة!" : stars===2 ? "حلو! جرّب المرة الجاية من غير مساعدة علشان الـ 3 نجوم." : "مش مشكلة، ارجع جرّبه تاني بعدين وخد نجوم أكتر."}</p>
+    ${newBadges.map(b=>`<div class="newbadge">شارة جديدة: ${b.e} ${esc(b.n)}</div>`).join("")}
+    ${wd ? `<p style="color:var(--pink-d)"><b>${WORLDS[l.w].e} خلّصت «${esc(WORLDS[l.w].name)}» وخدت ملصق جديد!</b></p>` : ""}
+    ${outfitNew ? `<p style="color:#7A60D6"><b>👒 اتفتح لبس جديد في دولاب سمسم: ${esc(outfitNew.n)}</b></p>` : ""}
+    <div class="modal-actions">
+      ${all ? `<button class="btn big sun" id="mCert">🎓 الشهادة</button>` : ""}
+      ${isLast ? "" : `<button class="btn big pink" id="mNext">اللي بعده</button>`}
+      <button class="btn big" id="mMap">الخريطة</button>
+      <button class="btn big" id="mStay">خليني هنا</button>
+    </div>`);
+  const n = document.getElementById("mNext"); if(n){ n.onclick = () => openLevel(l.n+1); n.focus(); }
+  const c = document.getElementById("mCert"); if(c) c.onclick = openCert;
+  document.getElementById("mMap").onclick = renderMap;
+  document.getElementById("mStay").onclick = closeModal;
+}
+
+/* ===================== الملعب الحر ===================== */
+function openPlay(){
+  leave();
+  const sample = S.code.__play2 != null ? S.code.__play2 :
+`# الملعب الحر: جرّب أي حاجة هنا
+import random
+
+name = input("اسمك إيه؟ ")
+lucky = random.randint(1, 100)
+print(f"أهلاً يا {name}!")
+print(f"رقم حظك النهارده: {lucky}")
+
+for i in range(1, 5):
+    print("🌸" * i)
+`;
+  app.innerHTML = `<div style="--wc:#FFF0B3; --wb:#F2C94C">
+  <div class="lvl-top"><button class="btn" id="mapBtn">الخريطة</button><div class="crumb"><small>مكان تجاربك</small><h1>الملعب الحر</h1></div></div>
+  <div class="bench">
+    <div class="col"><section class="panel lessonp"><div class="panel-h"><span class="tag">أفكار</span> جرّب تعمل…</div><div class="panel-b lesson">
+      <p>🎲 لعبة زهر لاتنين: مين يجيب رقم أكبر؟</p>
+      <p>🎂 برنامج يحسب فاضل كام يوم على عيد ميلادك.</p>
+      <p>🌲 شجرة بالنجوم والمسافات: <code class="ic">" " * n + "*" * k</code>.</p>
+      <p>⏰ دالة بتحوّل الدقايق لساعات ودقايق بـ <code class="ic">//</code> و <code class="ic">%</code>.</p>
+      <p>🐱 قاموس فيه حيوانات وأصواتها، والبرنامج يقولك صوت الحيوان اللي تكتبه.</p>
+      ${say("هنا البرنامج بيسألك وإنت بترد على طول في الشاشة. الكود بيتحفظ لوحده، ومفيش تصحيح. جرّب براحتك!")}
+    </div></section></div>
+    <div class="col"><section class="panel task"><div class="panel-h"><span class="tag">المحرر</span> اكتب أي كود</div><div class="panel-b">
+      ${editorHTML()}
+      <div class="actions"><button class="btn sky big" id="runBtn"><svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z" fill="currentColor"/></svg>شغّل</button><button class="btn pink big" id="stopBtn" hidden>⏹ إيقاف</button></div>
+      <div class="console" id="console"><div class="title">شاشة البرنامج</div><div class="ln muted">دوس «شغّل».</div></div>
+      <div id="feedback" aria-live="polite"></div>
+    </div></section></div>
+  </div></div>`;
+  document.getElementById("mapBtn").onclick = renderMap;
+  let tmr;
+  const ed = setupEditor(sample, v => { clearTimeout(tmr); tmr = setTimeout(()=>{ S.code.__play2 = v; save(); }, 300); });
+  liveRunner(ed.get, null, ed);
+  window.scrollTo({top:0});
+}
+
+document.getElementById("brandBtn").onclick = renderMap;
+paintStats();
+renderMap();
+})();
+</script>
+
+</body>
+</html>
